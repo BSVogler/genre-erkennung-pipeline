@@ -70,16 +70,19 @@ def build_vectors(keyword="",data_label="",lower_limit=None,upper_limit=None,fol
 
     # # X_training
     training_vector = sequence.pad_sequences(training_vector, maxlen=np.max([maxlen_training,maxlen_evaluation]),dtype='float32')
-    pickle.dump(training_vector,open("pickled_vectors/{1}{0}_training_vector.pickle".format(keyword,data_label),"wb"))
+    #write to file
+    training_file = open("pickled_vectors/{1}{0}_training_vector.pickle".format(keyword,data_label)
+    pickle.dump(training_vector, training_file,"wb"))
     #
-    # # y
+    # write y
     #
-    pickle.dump(labels,open("pickled_vectors/{1}{0}_label.pickle".format(keyword,data_label),"wb"))
-    #
-    #
+    label_file = open("pickled_vectors/{1}{0}_label.pickle".format(keyword,data_label),"wb")
+    pickle.dump(labels,label_file)
+    
     # # evaluation
     evaluation_training_vector = sequence.pad_sequences(evaluation_training_vector, maxlen=np.max([maxlen_training,maxlen_evaluation]),dtype='float32')
-    pickle.dump(evaluation_training_vector,open("pickled_vectors/{1}{0}_evaluation_training_vector.pickle".format(keyword,data_label),"wb"))
+    evalFile = open("pickled_vectors/{1}{0}_evaluation_training_vector.pickle".format(keyword,data_label),"wb")
+    pickle.dump(evaluation_training_vector,evalFile)
     #
     # # evaluation
     pickle.dump(evaluation_labels,open("pickled_vectors/{1}{0}_evaluation_label.pickle".format(keyword,data_label),"wb"))
