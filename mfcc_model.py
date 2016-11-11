@@ -6,6 +6,8 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.layers import Convolution1D, MaxPooling1D
 from keras.layers import LSTM, GRU, Flatten
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import pickle
 import json
