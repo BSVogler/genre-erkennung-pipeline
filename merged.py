@@ -19,6 +19,14 @@ nb_epoch = 50
 
 numGenres = 3
 
+if not os.path.exists("model_weights"):
+   os.makedirs("model_weights")
+  
+#check if can write to file
+f = open('model_weights/mfcc_model_weights.hdf5', 'a')
+f.write('test')
+f.close()
+    
 print("creating model")
 # create model
 y = pickle.load(open("pickled_vectors/mfcc_coefficients_label.pickle","rb"))
