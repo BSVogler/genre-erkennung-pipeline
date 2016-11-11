@@ -96,8 +96,15 @@ def mfcc_model(input_shape):
     return model
 
 if __name__=="__main__":
-
-
+    
+    if not os.path.exists("model_weights"):
+        os.makedirs("model_weights")
+        
+    #check if can write to file
+    f = open('model_weights/mfcc_model_weights.hdf5', 'a')
+    f.write('test')
+    f.close()
+   
     # print(X)
     # load vectorized song features
     #
@@ -143,9 +150,8 @@ if __name__=="__main__":
         plt.title(k)
 
         plt.plot(range(0,len(v)),v,marker="8",linewidth=1.5)
-    if not os.path.exists("model_weights"):
-        os.makedirs("model_weights")
-    model.save_weights("model_weights/mfcc_model_weights.hdf5",overwrite=True)                                              
+        
+    model.save_weights("model_weights/mfcc_model_weights.hdf5",overwrite=True)
     
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     plt.show()
