@@ -21,12 +21,13 @@ def saveToFile(genreResult):
         f.write(genreResult)
         f.close()
 
-if not os.path.exists("model_weights/super_awesome_merged_model_weights.hdf5"):
-    print("No model weights found in path 'model_weights/merged_model_weights.hdf5'")
+path = "model_weights/merged_model_weights.hdf5";
+if not os.path.exists(path):
+    print("No model weights found in path '"+path+"'")
 else:
     json_string = json.load(open("model_architecture/merged_model_architecture.json","r"))
     model = model_from_json(json_string)
-    model.load_weights("model_weights/super_awesome_merged_model_weights.hdf5")
+    model.load_weights(path)
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy']
