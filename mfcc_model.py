@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 
 import numpy as np
 np.random.seed(1337)  # for reproducibility
