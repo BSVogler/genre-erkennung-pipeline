@@ -1,7 +1,18 @@
 #!/usr/bin/env python3
+import argparse
+
+args = []
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Detects the genre of a music file.')
+    parser.add_argument('--filepath', '-f', dest='filepath', metavar='path', nargs=1,
+                        help='path to file or fodler containing files')
+    parser.add_argument('-k', '--keep', action='store_true', dest='keep',
+                        help='if set keeps audio files')
+    args = parser.parse_args()
+
 import numpy as np
 np.random.seed(1337)  # for reproducibility
-from keras.models import model_from_json, Sequential
+
 import json
 from extract_features import extract_features
 from split_30_seconds import batch_thirty_seconds, thirty_seconds
@@ -9,7 +20,15 @@ import os
 import re
 import sys
 from numpy import genfromtxt
-from keras.preprocessing import sequence
+
+
+# Parse song
+if args.filepath is None:
+    print("missing parameter --filepath")
+    sys.exit()
+filepath = args.filepath[0]
+song_folder = os.path.dirname(os.path.realpath(filepath))#should get the directory to the file
+
 
 def saveToFile(genreResult):
     #if has another id save to file
@@ -25,6 +44,19 @@ path = "model_weights/merged_model_weights.hdf5";
 if not os.path.exists(path):
     print("No model weights found in path '"+path+"'")
 else:
+    if os.path.isdir(filepath):
+        batch_thirty_seconds(song_folder)
+        extract_features(song_folder)
+    else:
+        print("Splitting file:")
+        thirty_seconds(filepath, args.keep is None)
+        print("File split. Now extracting features.")
+        extract_features(song_folder+"/split/")
+        print("Extracted features.")
+
+    from keras.models import model_from_json, Sequential
+    from keras.preprocessing import sequence
+    
     json_string = json.load(open("model_architecture/merged_model_architecture.json","r"))
     model = model_from_json(json_string)
     model.load_weights(path)
@@ -32,108 +64,89 @@ else:
                   optimizer='adam',
                   metrics=['accuracy']
                   )
-    # Parse song
-    if len(sys.argv) < 2:
-        print("missing parameter")
-    else:
-        filename = sys.argv[1]
-        song_folder = os.path.dirname(os.path.realpath(filename))#should get the directory to the file
+                  
+    #mfcc coefficients
+    x = []
+    for root, dirs, files in os.walk(song_folder, topdown=False):
+        for name in files:
+            if re.search("mfcc_coefficients.csv",name):
+                song_path = (os.path.join(root,name))
 
-        if os.path.isdir(filename):
-            batch_thirty_seconds(song_folder)
-            extract_features(song_folder)
-        else:
-            thirty_seconds(filename)
-            print("File split. Now extracting features.")
-            extract_features(song_folder)
-            print("Extracted features.")
-             
-        keyword_2 = "mfcc_coefficients"
+                song_features = genfromtxt(song_path, delimiter=",")
 
-        x2 = []
-        for root, dirs, files in os.walk(song_folder, topdown=False):
-            for name in files:
-                if re.search(keyword_2+".csv",name):
-                    song_path = (os.path.join(root,name))
+                if len(song_features.shape) is 2:
+                    song_features = np.array([ _line[1:] for _line in song_features])
+                elif len(song_features.shape) is 1:
+                    song_features = np.array([song_features[1:]])
 
-                    song_features = genfromtxt(song_path, delimiter=",")
+                x[0].append(song_features)
 
-                    if len(song_features.shape) is 2:
-                        song_features = np.array([ _line[1:] for _line in song_features])
-                    elif len(song_features.shape) is 1:
-                        song_features = np.array([song_features[1:]])
+    mfcc_max_len = 0
 
-                    x2.append(song_features)
+    with( open("maxlen_mfcc_coefficients","r") ) as _f:
+        mfcc_max_len = int(_f.read())
 
-        mfcc_max_len = 0
+    x[0] = sequence.pad_sequences(x[0], maxlen=mfcc_max_len,dtype='float32')
 
-        with( open("maxlen_mfcc_coefficients","r") ) as _f:
-            mfcc_max_len = int(_f.read())
+    #Spectral contrast peaks
+    for root, dirs, files in os.walk(song_folder, topdown=False):
+        for name in files:
+            if re.search("spectral-contrast_peaks.csv", name):
+                song_path = (os.path.join(root,name))
+                song_features = genfromtxt(song_path, delimiter=",")
 
-        x2 = sequence.pad_sequences(x2, maxlen=mfcc_max_len,dtype='float32')
+                if len(song_features.shape) is 2:
+                    song_features = np.array([ _line[1:] for _line in song_features])
+                elif len(song_features.shape) is 1:
+                    song_features = np.array([song_features[1:]])
 
-        keyword_3 = "spectral-contrast_peaks"
-        x3 = []
-        for root, dirs, files in os.walk(song_folder, topdown=False):
-            for name in files:
-                if re.search(keyword_3+".csv",name):
-                    song_path = (os.path.join(root,name))
-                    song_features = genfromtxt(song_path, delimiter=",")
+                x[1].append(song_features)
 
-                    if len(song_features.shape) is 2:
-                        song_features = np.array([ _line[1:] for _line in song_features])
-                    elif len(song_features.shape) is 1:
-                        song_features = np.array([song_features[1:]])
+    spectral_max_len = 0
+    with( open("maxlen_spectral-contrast_peaks","r") ) as _f:
+        spectral_max_len = int(_f.read())
 
-                    x3.append(song_features)
+    x[1] = sequence.pad_sequences(x3, maxlen=spectral_max_len,dtype='float32')
 
-        spectral_max_len = 0
-        with( open("maxlen_spectral-contrast_peaks","r") ) as _f:
-            spectral_max_len = int(_f.read())
+    #Spectral contrast valleys
+    for root, dirs, files in os.walk(song_folder, topdown=False):
+        for name in files:
+            if re.search("spectral-contrast_valleys.csv",name):
+                song_path = (os.path.join(root,name))
+                song_features = genfromtxt(song_path, delimiter=",")
 
-        x3 = sequence.pad_sequences(x3, maxlen=spectral_max_len,dtype='float32')
+                if len(song_features.shape) is 2:
+                    song_features = np.array([ _line[1:] for _line in song_features])
+                elif len(song_features.shape) is 1:
+                    song_features = np.array([song_features[1:]])
 
-        keyword_4 = "spectral-contrast_valleys"
-        x4 = []
-        for root, dirs, files in os.walk(song_folder, topdown=False):
-            for name in files:
-                if re.search(keyword_4+".csv",name):
-                    song_path = (os.path.join(root,name))
-                    song_features = genfromtxt(song_path, delimiter=",")
+                x[2].append(song_features)
 
-                    if len(song_features.shape) is 2:
-                        song_features = np.array([ _line[1:] for _line in song_features])
-                    elif len(song_features.shape) is 1:
-                        song_features = np.array([song_features[1:]])
+    spectral_max_len = 0
+    with( open("maxlen_spectral-contrast_peaks","r") ) as _f:
+        spectral_max_len = int(_f.read())
 
-                    x4.append(song_features)
+    x3 = sequence.pad_sequences(x[2], maxlen=spectral_max_len, dtype='float32')
 
-        spectral_max_len = 0
-        with( open("maxlen_spectral-contrast_peaks","r") ) as _f:
-            spectral_max_len = int(_f.read())
-
-        x4 = sequence.pad_sequences(x4, maxlen=spectral_max_len,dtype='float32')
-
-        predictions = model.predict_classes([x2,x3,x4])
-        genredict = ["hiphop","pop", "rock"]
-        genredict.sort()#make sure that it is alphabetically sorted
+    predictions = model.predict_classes(x)
+    genredict = ["hiphop","pop", "rock"]
+    genredict.sort()#make sure that it is alphabetically sorted
+    
+    #make a list of result strings
+    resultsstringified = []
+    for p in predictions:#p is digit
+        resultsstringified.append(genredict[p])
         
-        #make a list of result strings
-        resultsstringified = []
-        for p in predictions:#p is digit
-            resultsstringified.append(genredict[p])
-            
-        mode = max(set(resultsstringified), key=resultsstringified.count);
+    mode = max(set(resultsstringified), key=resultsstringified.count);
+    
+    resultstring = ""
+    modeCounter=0
+    for p in resultsstringified:
+        if mode==p:
+            modeCounter+=1
+        resultstring += p+" "
         
-        resultstring = ""
-        modeCounter=0
-        for p in resultsstringified:
-            if mode==p:
-                modeCounter+=1
-            resultstring += p+" "
-            
-        print("Detected "+resultstring)  
-        print("The song is "+str(modeCounter*100/len(resultsstringified))+" % "+mode)
-        
-        saveToFile(resultstring)
-
+    print("Detected "+resultstring)  
+    print("The song is "+str(modeCounter*100/len(resultsstringified))+" % "+mode)
+    
+    saveToFile(resultstring)

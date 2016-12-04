@@ -4,6 +4,14 @@ import re
 import subprocess
 import os.path
 import sys
+import argparse
+
+args=None
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Tool for audio.')
+    parser.add_argument('-k', '--keep', action='store_true', dest='keep',
+                        help='if set keeps audio files')
+    args = parser.parse_args()
 
 def iterate_audio(path="."):
     for root, dirs, files in os.walk(path, topdown=False):
@@ -14,7 +22,7 @@ def iterate_audio(path="."):
                 song_path = (os.path.join(root,name))
                 yield song_path
 
-def ffmpeg_process(filepath,cmd,delete_original=True):
+def ffmpeg_process(filepath,cmd, delete_original=True):
     filepath = filepath.replace("./","")
     tupelPath = os.path.splitext(filepath)
     commandos = [cmd.format(tupelPath[0],tupelPath[1])]
@@ -25,13 +33,14 @@ def ffmpeg_process(filepath,cmd,delete_original=True):
         print(cmd)
         subprocess.call(cmd.split())
 
-def thirty_seconds(filepath):
+def thirty_seconds(filepath, delete_original=args is not None and args.keep is None):
     """
     split audio to 30 seconds each.
 
     ffmpeg -i in.mp3 -f segment -segment_time 30 -c copy out%03d.mp3"""
-    split_commando = "ffmpeg -i {0}{1} -f segment -segment_time 30 -c copy {0}-%03d{1}"
-    ffmpeg_process(filepath,split_commando)
+    
+    split_commando = "ffmpeg -i {0}{1} -f segment -segment_time 30 -c copy "+os.path.dirname(filepath)+"/split/%03d{1}"
+    ffmpeg_process(filepath,split_commando, delete_original)
 
 def to_mono(filepath):
     "to mono"
