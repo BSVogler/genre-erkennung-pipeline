@@ -13,10 +13,8 @@ if __name__ == "__main__":
 import numpy as np
 np.random.seed(1337)  # for reproducibility
 
-import json
 import os
 import re
-
 from numpy import genfromtxt
 
 
@@ -62,6 +60,7 @@ else:
     from keras.preprocessing import sequence
     
     json_string = json.load(open("model_architecture/merged_model_architecture.json","r"))
+    import json
     model = model_from_json(json_string)
     model.load_weights(path)
     model.compile(loss='categorical_crossentropy',
