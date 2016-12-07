@@ -4,5 +4,6 @@ dataset/*
 raw/*
 ngetest/*
 model_weights/*
+split/*
 *~
 *.mp3

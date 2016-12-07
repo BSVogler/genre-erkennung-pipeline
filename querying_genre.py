@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import argparse
+import sys
 
 args = []
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Detects the genre of a music file.')
-    parser.add_argument('--filepath', '-f', dest='filepath', metavar='path', nargs=1,
-                        help='path to file or fodler containing files')
+    parser.add_argument('filepath', help='path to file or fodler containing files')
     parser.add_argument('-k', '--keep', action='store_true', dest='keep',
                         help='if set keeps audio files')
     args = parser.parse_args()
@@ -14,21 +14,18 @@ import numpy as np
 np.random.seed(1337)  # for reproducibility
 
 import json
-from extract_features import extract_features
-from split_30_seconds import batch_thirty_seconds, thirty_seconds
 import os
 import re
-import sys
+
 from numpy import genfromtxt
 
 
 # Parse song
 if args.filepath is None:
-    print("missing parameter --filepath")
+    print("missing parameters")
     sys.exit()
-filepath = args.filepath[0]
+filepath = args.filepath
 song_folder = os.path.dirname(os.path.realpath(filepath))#should get the directory to the file
-
 
 def saveToFile(genreResult):
     #if has another id save to file
@@ -40,19 +37,26 @@ def saveToFile(genreResult):
         f.write(genreResult)
         f.close()
 
-path = "model_weights/merged_model_weights.hdf5";
-if not os.path.exists(path):
-    print("No model weights found in path '"+path+"'")
+modelWeightsPath = "model_weights/merged_model_weights.hdf5";
+if not os.path.exists(modelWeightsPath):
+    print("No model weights found in path '"+modelWeightsPath+"'")
 else:
+    from split_30_seconds import batch_thirty_seconds, thirty_seconds
+    from extract_features import extract_features
+    
+    if not os.path.exists(song_folder+"/split"):
+        os.makedirs(song_folder+"/split")
+        print("create folder for split file")
+    
+    print("Splitting file:")    
     if os.path.isdir(filepath):
         batch_thirty_seconds(song_folder)
+        print("Files split. Now extracting features.")
         extract_features(song_folder)
     else:
-        print("Splitting file:")
         thirty_seconds(filepath, args.keep is None)
         print("File split. Now extracting features.")
         extract_features(song_folder+"/split/")
-        print("Extracted features.")
 
     from keras.models import model_from_json, Sequential
     from keras.preprocessing import sequence
