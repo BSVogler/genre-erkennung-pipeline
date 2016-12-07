@@ -59,8 +59,9 @@ else:
     from keras.models import model_from_json, Sequential
     from keras.preprocessing import sequence
     
-    json_string = json.load(open("model_architecture/merged_model_architecture.json","r"))
     import json
+    with open("model_architecture/merged_model_architecture.json","r") as modelfile:
+        json_string = json.load(modelfile)
     model = model_from_json(json_string)
     model.load_weights(path)
     model.compile(loss='categorical_crossentropy',
