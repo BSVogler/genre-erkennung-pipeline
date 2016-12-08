@@ -58,7 +58,7 @@ merged = Merge([model_1,model_2],mode="concat")
 
 final_model = Sequential()
 final_model.add(merged)
-final_model.add(Dense(1000))
+final_model.add(Dense(100))
 final_model.add(Dense(numGenres, activation='softmax'))
 final_model.compile(loss='categorical_crossentropy',
               optimizer='adam',
