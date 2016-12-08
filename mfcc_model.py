@@ -14,7 +14,6 @@ import json
 
 numGenres=3
 def mfcc_model(input_shape):
-
     nb_filter = 100
     filter_length = 4
     hidden_dims = 250

@@ -14,10 +14,8 @@ import theano as T
 from os.path import exists
 import os
 
-
 batch_size = 50
 nb_epoch = 50
-
 numGenres = 3
 
 if not os.path.exists("model_weights"):
@@ -44,19 +42,16 @@ X_2 = pickle.load(open("pickled_vectors/spectral-contrast_peaks_training_vector.
 X_test_2 = pickle.load(open("pickled_vectors/spectral-contrast_peaks_evaluation_training_vector.pickle","rb"))
 
 model_1 = mfcc_model.mfcc_model((X_1.shape[1],X_1.shape[2]))
-
-
-
 model_2 = spectral_contrast_peaks_model.model((X_2.shape[1],X_2.shape[2]))
 
 print("y",y.shape)
 print("y_test",y_test.shape)
 # print("X_1",X_1.shape)
 # print("X_test_1",X_test_1.shape)
-print("X_1",X_1.shape)
-print("X_test_1",X_test_1.shape)
-print("X_2",X_2.shape)
-print("X_test_2",X_test_2.shape)
+print("X_1", X_1.shape)
+print("X_test_1", X_test_1.shape)
+print("X_2", X_2.shape)
+print("X_test_2", X_test_2.shape)
 #
 #
 merged = Merge([model_1,model_2],mode="concat")
