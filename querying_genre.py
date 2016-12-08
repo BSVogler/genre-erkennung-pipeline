@@ -54,8 +54,10 @@ else:
     else:
         thirty_seconds(filepath, args.keep is None)
         print("File split. Now extracting features.")
-        extract_features(song_folder+"/split/")
-
+        if not os.path.isfile(song_folder+"/split/000_vamp_bbc-vamp-plugins_bbc-spectral-contrast_peaks.csv"):
+            extract_features(song_folder+"/split/")
+        else:
+            print("Skipping feature extraction because feature file was found.")
     from keras.models import model_from_json, Sequential
     from keras.preprocessing import sequence
     
@@ -63,7 +65,7 @@ else:
     with open("model_architecture/merged_model_architecture.json","r") as modelfile:
         json_string = json.load(modelfile)
     model = model_from_json(json_string)
-    model.load_weights(path)
+    model.load_weights(modelWeightsPath)
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy']
@@ -71,6 +73,7 @@ else:
                   
     #mfcc coefficients
     x = []
+    x.append([]);
     for root, dirs, files in os.walk(song_folder, topdown=False):
         for name in files:
             if re.search("mfcc_coefficients.csv",name):
@@ -91,8 +94,10 @@ else:
         mfcc_max_len = int(_f.read())
 
     x[0] = sequence.pad_sequences(x[0], maxlen=mfcc_max_len,dtype='float32')
-
+    
+    
     #Spectral contrast peaks
+    x.append([])
     for root, dirs, files in os.walk(song_folder, topdown=False):
         for name in files:
             if re.search("spectral-contrast_peaks.csv", name):
@@ -110,9 +115,10 @@ else:
     with( open("maxlen_spectral-contrast_peaks","r") ) as _f:
         spectral_max_len = int(_f.read())
 
-    x[1] = sequence.pad_sequences(x3, maxlen=spectral_max_len,dtype='float32')
+    x[1] = sequence.pad_sequences(x[1], maxlen=spectral_max_len,dtype='float32')
 
     #Spectral contrast valleys
+    '''x.append([])
     for root, dirs, files in os.walk(song_folder, topdown=False):
         for name in files:
             if re.search("spectral-contrast_valleys.csv",name):
@@ -130,7 +136,7 @@ else:
     with( open("maxlen_spectral-contrast_peaks","r") ) as _f:
         spectral_max_len = int(_f.read())
 
-    x3 = sequence.pad_sequences(x[2], maxlen=spectral_max_len, dtype='float32')
+    x[2] = sequence.pad_sequences(x[2], maxlen=spectral_max_len, dtype='float32')'''
 
     predictions = model.predict_classes(x)
     genredict = ["hiphop","pop", "rock"]
