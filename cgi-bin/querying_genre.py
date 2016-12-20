@@ -3,17 +3,6 @@ import argparse
 import sys
 
 args = []
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Detects the genre of a music file.')
-    parser.add_argument('filepath', help='path to file or fodler containing files')
-    parser.add_argument('-k', '--keep', action='store_true', dest='keep',
-                        help='if set keeps audio files')
-    args = parser.parse_args()
-    # Parse song
-    if args.filepath is None:
-        print("missing parameters")
-        sys.exit()
-    query(args.filepath, args.keep is None)
 
 def query(filepath, keep=True):
     import numpy as np
@@ -45,15 +34,16 @@ def query(filepath, keep=True):
         if not os.path.exists(song_folder+"/split"):
             os.makedirs(song_folder+"/split")
             print("create folder for split file")
-    
-        print("Splitting file:")    
+     
         if os.path.isdir(filepath):
+            print("Splitting files in folder")   
             batch_thirty_seconds(song_folder)
-            print("Files split. Now extracting features.")
+            print("Now extracting features.")
             extract_features(song_folder)
         else:
+            print("Splitting file")  
             thirty_seconds(filepath, keep)
-            print("File split. Now extracting features.")
+            print("Now extracting features.")
             if not os.path.isfile(song_folder+"/split/000_vamp_bbc-vamp-plugins_bbc-spectral-contrast_peaks.csv"):
                 extract_features(song_folder+"/split/")
             else:
@@ -160,3 +150,15 @@ def query(filepath, keep=True):
         print("The song is "+str(modeCounter*100/len(resultsstringified))+" % "+mode)
     
         saveToFile(resultstring)
+        
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Detects the genre of a music file.')
+    parser.add_argument('filepath', help='path to file or fodler containing files')
+    parser.add_argument('-k', '--keep', action='store_true', dest='keep',
+                        help='if set keeps audio files')
+    args = parser.parse_args()
+    # Parse song
+    if args.filepath is None:
+        print("missing parameters")
+        sys.exit()
+    query(args.filepath, args.keep is None)
