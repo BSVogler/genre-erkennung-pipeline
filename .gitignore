@@ -5,5 +5,6 @@ raw/*
 ngetest/*
 model_weights/*
 split/*
+query/*
 *~
 *.mp3
