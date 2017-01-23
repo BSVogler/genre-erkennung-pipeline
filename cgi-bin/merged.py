@@ -28,48 +28,38 @@ f.close()
     
 print("creating model")
 # create model
-y = pickle.load(open("pickled_vectors/mfcc_coefficients_label.pickle","rb"))
-y_test = pickle.load(open("pickled_vectors/mfcc_coefficients_evaluation_label.pickle","rb"))
-# X_1 = pickle.load(open("pickled_vectors/tempotracker_tempo_training_vector.pickle","rb"))
-# X_test_1 = pickle.load(open("pickled_vectors/tempotracker_tempo_evaluation_training_vector.pickle","rb"))
+datasetfolder = "../pickled_vectors"
 
-# model_1 = tempotrack_model.tempotrack_model((X_1.shape[1],X_1.shape[2]))
+X_1 = pickle.load(open(datasetfolder+"/mfcc_coefficients_training_vector.pickle","rb"))
+X_test_1 = pickle.load(open(datasetfolder+"/mfcc_coefficients_evaluation_training_vector.pickle","rb"))
 
-X_1 = pickle.load(open("pickled_vectors/mfcc_coefficients_training_vector.pickle","rb"))
-X_test_1 = pickle.load(open("pickled_vectors/mfcc_coefficients_evaluation_training_vector.pickle","rb"))
+X_2 = pickle.load(open(datasetfolder+"/spectral-contrast_peaks_training_vector.pickle","rb"))
+X_test_2 = pickle.load(open(datasetfolder+"/spectral-contrast_peaks_evaluation_training_vector.pickle","rb"))
 
-X_2 = pickle.load(open("pickled_vectors/spectral-contrast_peaks_training_vector.pickle","rb"))
-X_test_2 = pickle.load(open("pickled_vectors/spectral-contrast_peaks_evaluation_training_vector.pickle","rb"))
+model_1 = mfcc_model.mfcc_model((X_1.shape[1], X_1.shape[2]))
+model_2 = spectral_contrast_peaks_model.model((X_2.shape[1], X_2.shape[2]))
 
-model_1 = mfcc_model.mfcc_model((X_1.shape[1],X_1.shape[2]))
-model_2 = spectral_contrast_peaks_model.model((X_2.shape[1],X_2.shape[2]))
-
-print("y",y.shape)
-print("y_test",y_test.shape)
 # print("X_1",X_1.shape)
 # print("X_test_1",X_test_1.shape)
 print("X_1", X_1.shape)
 print("X_test_1", X_test_1.shape)
 print("X_2", X_2.shape)
 print("X_test_2", X_test_2.shape)
-#
-#
-merged = Merge([model_1,model_2],mode="concat")
 
 final_model = Sequential()
+merged = Merge([model_1, model_2], mode="concat")
 final_model.add(merged)
 final_model.add(Dense(100))
 final_model.add(Dense(numGenres, activation='softmax'))
-final_model.compile(loss='categorical_crossentropy',
+final_model.compile(
+              loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy']
-              )
+)
 
 # plot(model_1,to_file="model_1.png")
 # plot(model_1,to_file="model_1.png")
 # plot(final_model,to_file="merged_model.png")
-
-
 
 json_string = final_model.to_json()
 with open("model_architecture/merged_model_architecture.json","w") as f:
@@ -82,10 +72,15 @@ print("Fitting")
 # # for i in range(10):
 # #     print("epoch",i)
 
+y = pickle.load(open(datasetfolder+"/mfcc_coefficients_label.pickle","rb"))
+y_test = pickle.load(open(datasetfolder+"/mfcc_coefficients_evaluation_label.pickle","rb"))
+print("y", y.shape)
+print("y_test", y_test.shape)
+
 history = final_model.fit([X_1,X_2], y,
                             batch_size=batch_size,
                             nb_epoch=nb_epoch,
-                            validation_data=([X_test_1,X_test_2], y_test),
+                            validation_data=([X_test_1, X_test_2], y_test),
                             shuffle="batch"
                             )
 if not os.path.exists("model_weights"):
