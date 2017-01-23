@@ -32,7 +32,7 @@ if len(arguments) >= 1:
         with open('results/'+youtubeID+".txt",'w') as resultfile:
             resultfile.write("pending")
             
-    #download file
+        #download file
         if not os.path.exists(queryPath+"/"+youtubeID+".mp3"):    
             print("Downloading "+youtubeURL+"<br>")
             cmd = "youtube-dl --extract-audio --audio-format mp3 -o "+queryPath+"/"+youtubeID+".%(ext)s "+youtubeID
