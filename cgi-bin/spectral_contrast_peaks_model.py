@@ -9,13 +9,12 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 import pickle
-import json
 
 numGenres=3
     
 # load vectorized song features
 #
-def model(input_shape):
+def model(input_shape, concat):
 
     nb_filter = 100
     filter_length = 3
@@ -89,8 +88,9 @@ def model(input_shape):
     #
     # model.add(Dropout(0.2))
     # model.add(Flatten())
-    model.add(Dense(numGenres))
-    model.add(Dropout(0.2))
+    if not concat:
+        model.add(Dense(numGenres))
+        model.add(Dropout(0.2))
     # model.add(Flatten())
     # model.add(LSTM(lstm_output_size))
     return model
@@ -126,11 +126,12 @@ def model(input_shape):
 # model.add(Dropout(0.2))
 
 if __name__=="__main__":
-    X = pickle.load(open("pickled_vectors/spectral-contrast_peaks_training_vector.pickle","rb"))
-    y = pickle.load(open("pickled_vectors/spectral-contrast_peaks_label.pickle","rb"))
+    datasetfolder = "../pickled_vectors"
+    X = pickle.load(open(datasetfolder+"/spectral-contrast_peaks_training_vector.pickle","rb"))
+    y = pickle.load(open(datasetfolder+"/datasetfolder/spectral-contrast_peaks_label.pickle","rb"))
 
-    X_test = pickle.load(open("pickled_vectors/spectral-contrast_peaks_evaluation_training_vector.pickle","rb"))
-    y_test = pickle.load(open("pickled_vectors/spectral-contrast_peaks_evaluation_label.pickle","rb"))
+    X_test = pickle.load(open(datasetfolder+"/spectral-contrast_peaks_evaluation_training_vector.pickle","rb"))
+    y_test = pickle.load(open(datasetfolder+"/spectral-contrast_peaks_evaluation_label.pickle","rb"))
 
     batch_size = 20
     nb_epoch = 50
@@ -166,6 +167,7 @@ if __name__=="__main__":
     # # with open("experimental_results.json","w") as f:
     # #     f.write(json.dumps(history.history, sort_keys=True,indent=4, separators=(',', ': ')))
     #
+    import os
     if not os.path.exists("model_weights"):
         os.makedirs("model_weights")
     model.save_weights("model_weights/spectral_contrast_peaks_model_weights.hdf5",overwrite=True)    

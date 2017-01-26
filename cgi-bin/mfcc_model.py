@@ -13,7 +13,7 @@ import pickle
 import json
 
 numGenres=3
-def mfcc_model(input_shape):
+def mfcc_model(input_shape, concat):
     nb_filter = 100
     filter_length = 4
     hidden_dims = 250
@@ -70,8 +70,9 @@ def mfcc_model(input_shape):
     # model.add(Flatten())
     # model.add(LSTM(lstm_output_size))
     model.add(Dropout(0.4))
-    model.add(Dense(numGenres))
-    model.add(Dropout(0.2))
+    if not concat:
+        model.add(Dense(numGenres))
+        model.add(Dropout(0.2))
     #
     # model.add(Convolution1D(
     #                         nb_filter=int(nb_filter/10),
@@ -97,7 +98,7 @@ def mfcc_model(input_shape):
     return model
 
 if __name__=="__main__":
-    
+    import os
     if not os.path.exists("model_weights"):
         os.makedirs("model_weights")
         

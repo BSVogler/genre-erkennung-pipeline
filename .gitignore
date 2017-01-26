@@ -9,3 +9,4 @@ query/*
 *~
 *.mp3
 results/*
+.idea/workspace.xml

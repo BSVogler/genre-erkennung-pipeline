@@ -36,8 +36,8 @@ X_test_1 = pickle.load(open(datasetfolder+"/mfcc_coefficients_evaluation_trainin
 X_2 = pickle.load(open(datasetfolder+"/spectral-contrast_peaks_training_vector.pickle","rb"))
 X_test_2 = pickle.load(open(datasetfolder+"/spectral-contrast_peaks_evaluation_training_vector.pickle","rb"))
 
-model_1 = mfcc_model.mfcc_model((X_1.shape[1], X_1.shape[2]))
-model_2 = spectral_contrast_peaks_model.model((X_2.shape[1], X_2.shape[2]))
+model_1 = mfcc_model.mfcc_model((X_1.shape[1], X_1.shape[2]), True)
+model_2 = spectral_contrast_peaks_model.model((X_2.shape[1], X_2.shape[2]), True)
 
 # print("X_1",X_1.shape)
 # print("X_test_1",X_test_1.shape)
@@ -47,8 +47,7 @@ print("X_2", X_2.shape)
 print("X_test_2", X_test_2.shape)
 
 final_model = Sequential()
-merged = Merge([model_1, model_2], mode="concat")
-final_model.add(merged)
+final_model.add(Merge([model_1, model_2], mode="concat"))
 final_model.add(Dense(100))
 final_model.add(Dense(numGenres, activation='softmax'))
 final_model.compile(
@@ -62,7 +61,7 @@ final_model.compile(
 # plot(final_model,to_file="merged_model.png")
 
 json_string = final_model.to_json()
-with open("model_architecture/merged_model_architecture.json","w") as f:
+with open("../model_architecture/merged_model_architecture.json","w") as f:
     f.write(json.dumps(json_string, sort_keys=True,indent=4, separators=(',', ': ')))
 
 print("Fitting")
