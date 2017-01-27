@@ -4,7 +4,6 @@ np.random.seed(1337)  # for reproducibility
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Merge
 import matplotlib as mpl
-mpl.use('Agg')
 import matplotlib.pyplot as plt
 import pickle
 import json
@@ -76,14 +75,22 @@ y_test = pickle.load(open(datasetfolder+"/mfcc_coefficients_evaluation_label.pic
 print("y", y.shape)
 print("y_test", y_test.shape)
 
+if not os.path.exists("model_weights"):
+    os.makedirs("model_weights")
+    
+# checkpoint
+filepath="weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
+checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+callbacks_list = [checkpoint]
+
 history = final_model.fit([X_1,X_2], y,
                             batch_size=batch_size,
                             nb_epoch=nb_epoch,
                             validation_data=([X_test_1, X_test_2], y_test),
-                            shuffle="batch"
+                            shuffle="batch",
+                            callbacks=callbacks_list, 
                             )
-if not os.path.exists("model_weights"):
-    os.makedirs("model_weights")
+print("saving final result")
 final_model.save_weights("model_weights/merged_model_weights.hdf5",overwrite=True)
 
 with open("experimental_results.json","w") as f:
@@ -97,6 +104,6 @@ for k,v in history.history.items():
     plt.title(k)
 
     plt.plot(range(0,len(v)),v,marker="8",linewidth=1.5)
-
+    
 plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
-plt.show()
+plt.savefig('history.png')
