@@ -14,7 +14,7 @@ from os.path import exists
 import os
 
 batch_size = 50
-nb_epoch = 50
+nb_epoch = 300
 numGenres = 3
 
 if not os.path.exists("model_weights"):
