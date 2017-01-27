@@ -7,7 +7,6 @@ from keras.layers import Dense, Dropout, Activation
 from keras.layers import Convolution1D, MaxPooling1D
 from keras.layers import LSTM, GRU, Flatten
 import matplotlib as mpl
-mpl.use('Agg')
 import matplotlib.pyplot as plt
 import pickle
 import json
@@ -156,4 +155,4 @@ if __name__=="__main__":
     model.save_weights("model_weights/mfcc_model_weights.hdf5",overwrite=True)
     
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
-    plt.show()
+    plt.savefig('history.png')
