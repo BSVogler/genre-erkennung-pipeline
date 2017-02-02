@@ -30,8 +30,8 @@ def ffmpeg_process(filepath,cmd, delete_original=True):
         del_commando = "rm "+filepath
         commandos.append(del_commando)
     for cmd in commandos:
-        print(cmd)
-        subprocess.call(cmd.split())
+        print("Subproces: "+cmd)
+        subprocess.check_output(cmd, shell=True)
 
 def thirty_seconds(filepath, delete_original=args is not None and args.keep is None):
     """
