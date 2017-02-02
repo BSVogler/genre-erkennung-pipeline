@@ -17,15 +17,15 @@ def iterate_audio(path="."):
     for root, dirs, files in os.walk(path, topdown=False):
         for name in files:
             print(name)
-            if re.search(".mp3",name):
-                print(name+"found")
+            if re.search(".mp3", name):
+                print(name+" found")
                 song_path = (os.path.join(root,name))
                 yield song_path
 
 def ffmpeg_process(filepath,cmd, delete_original=True):
-    filepath = filepath.replace("./","")
+    #filepath = filepath.replace("./","")
     tupelPath = os.path.splitext(filepath)
-    commandos = [cmd.format(tupelPath[0],tupelPath[1])]
+    commandos = [cmd.format(tupelPath[0], tupelPath[1])]
     if delete_original:
         del_commando = "rm "+filepath
         commandos.append(del_commando)
@@ -41,13 +41,13 @@ def thirty_seconds(filepath, delete_original=args is not None and args.keep is N
     
     if filepath is None:
         filepath = "."
-    split_commando = "ffmpeg -i {0}{1} -f segment -segment_time 30 -c copy "+os.path.dirname(filepath)+"/split/%03d{1}"
-    ffmpeg_process(filepath,split_commando, delete_original)
+    split_commando = "ffmpeg -i \"{0}{1}\" -f segment -segment_time 30 -c copy "+os.path.dirname(filepath)+"/split/%03d{1}"
+    ffmpeg_process(filepath, split_commando, delete_original)
 
 def to_mono(filepath):
     "to mono"
     "ffmpeg -i stereo.flac -ac 1 mono.flac"
-    mono_commando = "ffmpeg -i {0}.{1} -ac 1 {0}-mono.{1}"
+    mono_commando = "ffmpeg -i \"{0}.{1}\" -ac 1 \"{0}-mono.{1}\""
     ffmpeg_process(filepath,mono_commando)
 
 #for every file in folder splits in thirty second parts

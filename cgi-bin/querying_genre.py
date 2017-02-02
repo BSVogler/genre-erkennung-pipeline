@@ -11,9 +11,10 @@ def query(filepath, keep=True):
     import os
     import re
     from numpy import genfromtxt
-
+    
+    print("The song path: "+filepath)
     song_folder = os.path.dirname(os.path.realpath(filepath))#should get the directory to the file
-
+    print("The song folder is: "+song_folder)
     def saveToFile(genreResult):
         #if has another id save to file
         if len(sys.argv) > 2:
@@ -24,7 +25,7 @@ def query(filepath, keep=True):
             f.write(genreResult)
             f.close()
 
-    modelWeightsPath = "model_weights/merged_model_weights.hdf5";
+    modelWeightsPath = "./model_weights/merged_model_weights.hdf5";
     if not os.path.exists(modelWeightsPath):
         print("No model weights found in path '"+modelWeightsPath+"'")
     else:
@@ -41,10 +42,10 @@ def query(filepath, keep=True):
             print("Now extracting features.")
             extract_features(song_folder)
         else:
-            print("Splitting file")  
-            thirty_seconds(filepath, keep)
-            print("Now extracting features.")
+            print("Splitting file: "+filepath)  
+            thirty_seconds(song_folder+"/"+os.path.basename(filepath), not keep)
             if not os.path.isfile(song_folder+"/split/000_vamp_bbc-vamp-plugins_bbc-spectral-contrast_peaks.csv"):
+                print("Now extracting features.")
                 extract_features(song_folder+"/split/")
             else:
                 print("Skipping feature extraction because feature file was found.")
