@@ -61,10 +61,11 @@ def query(filepath, keep=True):
                       optimizer='adam',
                       metrics=['accuracy']
                       )
-                  
-        #mfcc coefficients
+        
         x = []
-        x.append([]);
+        #mfcc coefficients
+        vectorMFCC = []
+
         for root, dirs, files in os.walk(song_folder, topdown=False):
             for name in files:
                 if re.search("mfcc_coefficients.csv",name):
@@ -77,18 +78,16 @@ def query(filepath, keep=True):
                     elif len(song_features.shape) is 1:
                         song_features = np.array([song_features[1:]])
 
-                    x[0].append(song_features)
+                    vectorMFCC.append(song_features)
 
         mfcc_max_len = 0
-
         with( open("maxlen_mfcc_coefficients","r") ) as _f:
             mfcc_max_len = int(_f.read())
 
-        x[0] = sequence.pad_sequences(x[0], maxlen=mfcc_max_len,dtype='float32')
-    
+        x.append(sequence.pad_sequences(vectorMFCC, maxlen=mfcc_max_len,dtype='float32'))
     
         #Spectral contrast peaks
-        x.append([])
+        vectorSCP =[]
         for root, dirs, files in os.walk(song_folder, topdown=False):
             for name in files:
                 if re.search("spectral-contrast_peaks.csv", name):
@@ -100,14 +99,14 @@ def query(filepath, keep=True):
                     elif len(song_features.shape) is 1:
                         song_features = np.array([song_features[1:]])
 
-                    x[1].append(song_features)
+                    vectorSCP.append(song_features)
 
         spectral_max_len = 0
         with( open("maxlen_spectral-contrast_peaks","r") ) as _f:
             spectral_max_len = int(_f.read())
-
-        x[1] = sequence.pad_sequences(x[1], maxlen=spectral_max_len,dtype='float32')
-
+        
+        x.append(sequence.pad_sequences(vectorSCP, maxlen=spectral_max_len,dtype='float32'))
+        
         #Spectral contrast valleys
         '''x.append([])
         for root, dirs, files in os.walk(song_folder, topdown=False):
