@@ -12,6 +12,9 @@ def query(filepath, keep=True):
     import re
     from numpy import genfromtxt
     
+    if keep:
+        print("Keeping file because flag is set.")
+    
     print("The song path: "+filepath)
     song_folder = os.path.dirname(os.path.realpath(filepath))#should get the directory to the file
     print("The song folder is: "+song_folder)
@@ -161,4 +164,4 @@ if __name__ == "__main__":
     if args.filepath is None:
         print("missing parameters")
         sys.exit()
-    query(args.filepath, args.keep is None)
+    query(args.filepath, args.keep is not None)
