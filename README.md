@@ -1,7 +1,14 @@
-# genre-erkennung-pipeline
-Genre-erkennung
+# Music Genre Classification Pipeline
+Everything using python:
+webAPI -> youtube-dl->vamp-> keras-> webAPI
+
+Demo
+https://www.youtube.com/watch?v=fLe6uyDHeCE
 
 ##dependencies:
+keras, youtube-dl, vamp
+
+Detailed guides in github wiki.
 
 ###feature extractions:
 
