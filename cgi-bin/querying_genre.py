@@ -4,6 +4,7 @@ import sys
 
 args = []
 
+
 def query(filepath, keep=True):
     import numpy as np
     np.random.seed(1337)  # for reproducibility
@@ -18,15 +19,6 @@ def query(filepath, keep=True):
     print("The song path: "+filepath)
     song_folder = os.path.dirname(os.path.realpath(filepath))#should get the directory to the file
     print("The song folder is: "+song_folder)
-    def saveToFile(genreResult):
-        #if has another id save to file
-        if len(sys.argv) > 2:
-            id = sys.argv[2]
-            if not os.path.exists("results"):
-                os.makedirs("results")
-            f = open('results/'+id+".txt", 'w')
-            f.write(genreResult)
-            f.close()
 
     modelWeightsPath = "./model_weights/merged_model_weights.hdf5";
     if not os.path.exists(modelWeightsPath):
@@ -45,7 +37,7 @@ def query(filepath, keep=True):
             print("Now extracting features.")
             extract_features(song_folder)
         else:
-            print("Splitting file: "+filepath)  
+            print("Splitting file: "+filepath)
             thirty_seconds(song_folder+"/"+os.path.basename(filepath), not keep)
             if not os.path.isfile(song_folder+"/split/000_vamp_bbc-vamp-plugins_bbc-spectral-contrast_peaks.csv"):
                 print("Now extracting features.")
@@ -56,7 +48,7 @@ def query(filepath, keep=True):
         from keras.preprocessing import sequence
     
         import json
-        with open("model_architecture/merged_model_architecture.json","r") as modelfile:
+        with open("model_architecture/merged_model_architecture.json", "r") as modelfile:
             json_string = json.load(modelfile)
         model = model_from_json(json_string)
         model.load_weights(modelWeightsPath)
@@ -87,7 +79,7 @@ def query(filepath, keep=True):
         with( open("maxlen_mfcc_coefficients","r") ) as _f:
             mfcc_max_len = int(_f.read())
 
-        x.append(sequence.pad_sequences(vectorMFCC, maxlen=mfcc_max_len,dtype='float32'))
+        x.append(sequence.pad_sequences(vectorMFCC, maxlen=mfcc_max_len, dtype='float32'))
     
         #Spectral contrast peaks
         vectorSCP =[]
@@ -108,7 +100,7 @@ def query(filepath, keep=True):
         with( open("maxlen_spectral-contrast_peaks","r") ) as _f:
             spectral_max_len = int(_f.read())
         
-        x.append(sequence.pad_sequences(vectorSCP, maxlen=spectral_max_len,dtype='float32'))
+        x.append(sequence.pad_sequences(vectorSCP, maxlen=spectral_max_len, dtype='float32'))
         
         #Spectral contrast valleys
         '''x.append([])
@@ -133,26 +125,36 @@ def query(filepath, keep=True):
 
         predictions = model.predict_classes(x)
         genredict = ["hiphop","pop", "rock"]
-        genredict.sort()#make sure that it is alphabetically sorted
     
-        #make a list of result strings
+        #transform one hot encoding to human readable format
         resultsstringified = []
+        resultStringList = ""
         for p in predictions:#p is digit
             resultsstringified.append(genredict[p])
+            resultStringList += genredict[p]+" "
         
-        mode = max(set(resultsstringified), key=resultsstringified.count);
+        genreMaxResult = max(set(resultsstringified), key=resultsstringified.count)
     
-        resultstring = ""
-        modeCounter=0
+        modeCounter = 0
         for p in resultsstringified:
-            if mode==p:
-                modeCounter+=1
-            resultstring += p+" "
-        
-        print("Detected "+resultstring)  
-        print("The song is "+str(modeCounter*100/len(resultsstringified))+" % "+mode)
-    
-        saveToFile(resultstring)
+            if genreMaxResult==p:
+                modeCounter += 1 #count percentage of maximum result
+
+        print("Detected "+resultStringList)
+        endresultString = "The song is "+str(modeCounter*100/len(resultsstringified))+" % "+genreMaxResult
+        print(endresultString)
+
+        def saveToFile(genreResult):
+            # if has another id save to file
+            if len(sys.argv) > 2:
+                id = os.path.splitext(os.path.basename(sys.argv[2]))[0]
+                if not os.path.exists("results"):
+                    os.makedirs("results")
+                f = open('results/' + id + ".txt", 'w')
+                f.write(genreResult)
+                f.close()
+
+        saveToFile(genreResult=endresultString)
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Detects the genre of a music file.')
