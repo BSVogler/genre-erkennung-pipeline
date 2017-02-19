@@ -41,7 +41,9 @@ def thirty_seconds(filepath, delete_original=args is not None and args.keep is N
     
     if filepath is None:
         filepath = "."
-    split_commando = "ffmpeg -i \"{0}{1}\" -f segment -segment_time 30 -c copy "+os.path.dirname(filepath)+"/split/%03d{1}"
+
+    id = os.path.splitext(os.path.basename(filepath))[0]
+    split_commando = "ffmpeg -i \"{0}{1}\" -f segment -segment_time 30 -c copy "+os.path.dirname(filepath)+"/split"+id+"/%03d{1}"
     ffmpeg_process(filepath, split_commando, delete_original)
 
 def to_mono(filepath):

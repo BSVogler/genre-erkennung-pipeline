@@ -15,6 +15,9 @@ def query(filepath, keep=True):
     
     if keep:
         print("Keeping file because flag is set.")
+
+
+    id = os.path.splitext(os.path.basename(filepath))[0]
     
     print("The song path: "+filepath)
     song_folder = os.path.dirname(os.path.realpath(filepath))#should get the directory to the file
@@ -27,9 +30,9 @@ def query(filepath, keep=True):
         from split_30_seconds import batch_thirty_seconds, thirty_seconds
         from extract_features import extract_features
     
-        if not os.path.exists(song_folder+"/split"):
-            os.makedirs(song_folder+"/split")
-            print("create folder for split file")
+        if not os.path.exists(song_folder+"/split"+id):
+            os.makedirs(song_folder+"/split"+id)
+            print("create folder "+song_folder+"/split"+id+" for split file parts")
      
         if os.path.isdir(filepath):
             print("Splitting files in folder")   
@@ -39,9 +42,9 @@ def query(filepath, keep=True):
         else:
             print("Splitting file: "+filepath)
             thirty_seconds(song_folder+"/"+os.path.basename(filepath), not keep)
-            if not os.path.isfile(song_folder+"/split/000_vamp_bbc-vamp-plugins_bbc-spectral-contrast_peaks.csv"):
+            if not os.path.isfile(song_folder+"/split"+id+"/000_vamp_bbc-vamp-plugins_bbc-spectral-contrast_peaks.csv"):
                 print("Now extracting features.")
-                extract_features(song_folder+"/split/")
+                extract_features(song_folder+"/split"+id+"/")
             else:
                 print("Skipping feature extraction because feature file was found.")
         from keras.models import model_from_json, Sequential
@@ -146,13 +149,11 @@ def query(filepath, keep=True):
 
         def saveToFile(genreResult):
             # if has another id save to file
-            if len(sys.argv) > 2:
-                id = os.path.splitext(os.path.basename(sys.argv[2]))[0]
-                if not os.path.exists("results"):
-                    os.makedirs("results")
-                f = open('results/' + id + ".txt", 'w')
-                f.write(genreResult)
-                f.close()
+            if not os.path.exists("results"):
+                os.makedirs("results")
+            f = open('results/' + id + ".txt", 'w')
+            f.write(genreResult)
+            f.close()
 
         saveToFile(genreResult=endresultString)
         
