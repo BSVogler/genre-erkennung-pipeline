@@ -144,7 +144,7 @@ def query(filepath, keep=True):
                 modeCounter += 1 #count percentage of maximum result
 
         print("Detected "+resultStringList)
-        endresultString = "The song is "+str(modeCounter*100/len(resultsstringified))+" % "+genreMaxResult
+        endresultString = "The song is "+"{:3.2f}".format(modeCounter*100/len(resultsstringified))+" % "+genreMaxResult
         print(endresultString)
 
         def saveToFile(genreResult):
