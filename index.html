@@ -4,18 +4,15 @@
 		<link rel="stylesheet" type="text/css" href="style.css" />
 		<script type="text/javascript">
 			requests=0;
-			requestId = "";
-			
 			function initalRequest(){
-				requestId="PNjG22Gbo6U";//temp, dev hack 
 				youtubeurl = document.getElementById("urlfield").value;
 				var xhttp = new XMLHttpRequest();
-				xhttp.open("GET", "http://localhost/cgi-bin/genreclassifier.py?youtubeurl="+encodeURIComponent(youtubeurl), true);
+				xhttp.open("GET", "/cgi-bin/genreclassifierWebAPI.py?youtubeurl="+encodeURIComponent(youtubeurl), true);
 				if (xhttp.readyState == XMLHttpRequest.DONE && xhttp.status == 200) {
 					document.getElementById("result").innerHTML = "It is <strong>" + xhttp.responseText+"</strong>";
 				}
+				setTimeout(function() { sendRequest(); }, 100);//start repsonse calling
 				xhttp.send();
-				sendRequest();	
 			}
 			
 			function sendRequest(){
@@ -23,30 +20,39 @@
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {
 					if (xhttp.readyState == 4) {
-					    if (xhttp.status == 404){
-						    requests+=0.1;
-					    	setTimeout(function() { sendRequest(); }, 800);
-					    	document.getElementById("inprogress").value = (requests/10);
-					    } else if (xhttp.status == 200){
-						    document.getElementById("result").innerHTML = "It is <strong>" + xhttp.responseText+"</strong>";
-						    document.getElementById("inprogress").style.visibility ="hidden";
-					    }
-					  }
+						if (xhttp.status == 404 ||(xhttp.status == 200 && xhttp.responseText=="pending")) {
+							requests+=0.1;
+							console.log("test")
+							setTimeout(function() { sendRequest(); }, 800);//recursive call with delay
+							document.getElementById("inprogress").value = (requests/10);
+						} else if (xhttp.status == 200) {
+							document.getElementById("result").innerHTML = "<h2><strong>" + xhttp.responseText+"</strong>.</h2><br><a href='javascript:reset();'>Try another</a>";
+							document.getElementById("queryForm").style.visibility ="hidden";
+							document.getElementById("inprogress").style.display ="none";
+						}
+					}
 				};
-				xhttp.open("GET", "http://localhost/cgi-bin/"+requestId+".txt", true);
+				youtubeURL = encodeURIComponent(document.getElementById("urlfield").value);
+				ytId = youtubeURL.substr(youtubeURL.indexOf("Fv%3") + 5);//get the id after the encoded equal sign
+				xhttp.open("GET", "/results/"+ytId+".txt", true);
 				xhttp.send();
+			}
+			
+			function reset(){
+				document.getElementById("queryForm").style.visibility = "visible";
+				document.getElementById("result").innerHTML = "";
 			}
 		</script>
 	</head>
 	<body>
 		<section>
 			<h1>Music Genre Identifier</h1>
-			<form action="#" method="get">
+			<form id="queryForm" action="#" method="get">
 				<input id="urlfield" autocomplete="on" autofocus type="url" name="youtubeurl" value="youtube.com/watch?v=PNjG22Gbo6U" placeholder="youtube.com/watch?v=PNjG22Gbo6U"/>
-				<input type="submit" value="Get genre" onclick="initalRequest();">
+				<input type="button" value="Get genre" onclick="initalRequest();">
 			</form>
-			<progress id="inprogress" value="0"></progress>
-			<h2 id="result"></h2>
+			<div id="inprogress">Thinking <img src="https://media.tenor.co/images/4765fec13f4823254d87ef4bda3aa565/raw"><progress value="0"></progress></div>
+			<section id="result"></section>
 		</section>
 	</body>
 </html>
