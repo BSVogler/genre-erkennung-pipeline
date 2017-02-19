@@ -1,0 +1,52 @@
+body {
+	background-color:purple;
+	color:black;
+	font-family: sans-serif;
+}
+
+body section{
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 40%;
+	height: 30%;
+	margin: auto;
+	vertical-align: middle;
+}
+
+h1 {
+	font-size: 3.9em;
+	text-align: center;
+	text-shadow: 2px 2px 12px rgba(123, 48, 177, 1);
+}
+
+h2 {
+	text-align: center;
+	font-size: 2.9em;
+}
+
+form {
+	
+}
+
+input[type="url"]{
+	width:500px;
+	height:40px;
+	font-size:1.5em;
+}
+
+input[type="submit"]{
+	height:40px;
+	font-size:3.5em;
+}
+
+#inprogress {
+	visibility: hidden;
+	
+}
+
+strong {
+	text-decoration: underline;
+}
