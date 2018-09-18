@@ -249,3 +249,10 @@ Detected rock hiphop hiphop hiphop rock hiphop rock hiphop hiphop rock
 The song is 60.0 % hiphop
 ```
 What does this mean? The song is split into 30 seconds chunks. The model predicts a genre for each chunk which are then averaged.
+
+## Web API
+You can start the webserver with startWebServer.sh.
+
+Then you can call the API via http, e.g. http://127.0.0.1:8000/cgi-bin/genreclassifierWebAPI?youtubeurl=http://youtube.com/watch?v=PNjG22Gbo6U
+
+The web API returns the result from the folder result. If it is not there yet it creates a new file in the folder with the content "pending". The file will be then downloaded, feature extraction made and put though the net. Once this is done the result is written to the file. You therefore have to make several calls to the API until you get the result.
