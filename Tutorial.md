@@ -9,21 +9,22 @@ Since this is a machine learning task, we shall follow the typical procedure of:
   * Querying model
 
 # Preliminaries
-You need a unix system for anything to work.
+You need a **unix** system (mac os, linux) for the pipeline to work.
 
-This guide will show how to use the code. First clone the git repo, and switch the branch to working-model-0.1
-```shell
-git clone https://github.com/amirothman/genre-erkennung-pipeline
-cd genre-erkennung-pipeline
-git checkout working-model-0.1
-```
-
-Now you should have all the code. But not yet all the data and the dependencies. But first, let's go through the requirement:
+This guide will show how to install and use the software. We will install the following dependencies:
 
   * keras (deep learning python framework)
   * sklearn (machine learning library)
   * matplotlib (plotting)
   * hdf5 (file format)
+
+First clone the git repo.
+```shell
+git clone https://github.com/amirothman/genre-erkennung-pipeline
+cd genre-erkennung-pipeline
+```
+
+Now you should have all the code. But not yet all the data and the dependencies.
  
 On Mac OS X hdf5 can be installed via `brew`
 ```shell
@@ -36,22 +37,25 @@ To install the python libraries:
   * `sudo python3 -m pip install sklearn`
   * `sudo python3 -m pip install matplotlib`
 
-Outside of the python libraries we also require some command line tools:
+We also require some command line tools for the feature extraction:
 
-  * [sonic-annotator](http://vamp-plugins.org/sonic-annotator/) (Vamp plug-in host, feature extraction utility)
-  * youtube-dl (to obtain music data)
+  * [sonic-annotator](http://vamp-plugins.org/sonic-annotator/) (Vamp plug-in host, extraction utility)
+  * youtube-dl (to query data)
+  * ffmpeg (to split song in a 30 second batch)
 
 Youtube-dl can be installed via
 ```shell
 sudo curl https://yt-dl.org/latest/youtube-dl -o /usr/local/bin/youtube-dl
 sudo chmod a+rx /usr/local/bin/youtube-dl
 ```
-And we also need to install some Vamp plugins for the feature extraction of the audio files:
+And we also need to install some Vamp plugins:
 
   * [QM-Vamp Plugins](https://code.soundsoftware.ac.uk/projects/qm-vamp-plugins/files)
   * [BBC Vamp Plugins](https://github.com/bbcrd/bbc-vamp-plugins/releases)
 
-Refer to [here](http://mtg.upf.edu/technologies/melodia?p=Download%20and%20installation) for instructions to install vamp plugins on different platforms.
+Install path:
+* Linux `/usr/local/lib/vamp` (you may mkdir the vamp folder)
+* Mac `/Library/Audio/Plug-Ins/Vamp`
 
 # Preparing a dataset
 
@@ -224,7 +228,7 @@ Or if you have configured CUDA on your machine, you can also use keras_gpu.sh. T
 
     sh keras_gpu.sh merged.py
 
-# Querying The Model
+# Querying the Model
 
 Now you would like to ask the model. By giving it a song, what would the model predict? Firstly, the song which the model would need to predict, would have to go through the whole pipeline.
 
@@ -233,12 +237,10 @@ The merge model, saved it's architecture into a json file. This happened in the 
 ```python
 json_string = final_model.to_json()
 with open("model_architecture/merged_model_architecture.json","w") as f:
-    f.write(json.dumps(json_string, sort_keys=True,indent=4, separators=(',', ': ')))
+    f.write(json.dumps(json_string, sort_keys=True, indent=4, separators=(',', ': ')))
 ```
 
-The trained weights should be saved in the following hdf5 file:
-
-    model_weights/merged_model_weights.hdf5
+The trained weights should be saved in the following hdf5 file `model_weights/merged_model_weights.hdf5`.
 
 So what we have to do to query the model are:
   * extract the features from the song
@@ -252,12 +254,12 @@ For this purpose, the script querying_genre.py is made. Make sure the right arch
 json_string = json.load(open("model_architecture/merged_model_architecture.json","r"))
 ````
 And also the right weights:
-
+```python
     model.load_weights("model_weights/merged_model_weights.hdf5")
-
+````
 ### An example
 ```shell
-getGenreFromYoutube.sh https://www.youtube.com/watch?v=VDvr08sCPOc
+./getGenreFromYoutube.sh "https://www.youtube.com/watch?v=VDvr08sCPOc"
 ```
 
 An example of the output would be something like:
