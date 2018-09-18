@@ -228,7 +228,7 @@ Or if you have configured CUDA on your machine, you can also use keras_gpu.sh. T
 
     sh keras_gpu.sh merged.py
 
-# Querying The Model
+# Querying the Model
 
 Now you would like to ask the model. By giving it a song, what would the model predict? Firstly, the song which the model would need to predict, would have to go through the whole pipeline.
 
@@ -237,12 +237,10 @@ The merge model, saved it's architecture into a json file. This happened in the 
 ```python
 json_string = final_model.to_json()
 with open("model_architecture/merged_model_architecture.json","w") as f:
-    f.write(json.dumps(json_string, sort_keys=True,indent=4, separators=(',', ': ')))
+    f.write(json.dumps(json_string, sort_keys=True, indent=4, separators=(',', ': ')))
 ```
 
-The trained weights should be saved in the following hdf5 file:
-
-    model_weights/merged_model_weights.hdf5
+The trained weights should be saved in the following hdf5 file `model_weights/merged_model_weights.hdf5`.
 
 So what we have to do to query the model are:
   * extract the features from the song
@@ -256,12 +254,12 @@ For this purpose, the script querying_genre.py is made. Make sure the right arch
 json_string = json.load(open("model_architecture/merged_model_architecture.json","r"))
 ````
 And also the right weights:
-
+```python
     model.load_weights("model_weights/merged_model_weights.hdf5")
-
+````
 ### An example
 ```shell
-getGenreFromYoutube.sh https://www.youtube.com/watch?v=VDvr08sCPOc
+./getGenreFromYoutube.sh "https://www.youtube.com/watch?v=VDvr08sCPOc"
 ```
 
 An example of the output would be something like:
