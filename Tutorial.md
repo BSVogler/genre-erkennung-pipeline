@@ -38,15 +38,15 @@ To install the python libraries:
 
 Outside of the python libraries we also require some command line tools:
 
-  * [sonic-annotator](http://vamp-plugins.org/sonic-annotator/) (Vamp plug-in host, extraction utility)
-  * youtube-dl (to query data)
+  * [sonic-annotator](http://vamp-plugins.org/sonic-annotator/) (Vamp plug-in host, feature extraction utility)
+  * youtube-dl (to obtain music data)
 
 Youtube-dl can be installed via
 ```shell
 sudo curl https://yt-dl.org/latest/youtube-dl -o /usr/local/bin/youtube-dl
 sudo chmod a+rx /usr/local/bin/youtube-dl
 ```
-And we also need to install some Vamp plugins:
+And we also need to install some Vamp plugins for the feature extraction of the audio files:
 
   * [QM-Vamp Plugins](https://code.soundsoftware.ac.uk/projects/qm-vamp-plugins/files)
   * [BBC Vamp Plugins](https://github.com/bbcrd/bbc-vamp-plugins/releases)
@@ -255,7 +255,7 @@ And also the right weights:
 
     model.load_weights("model_weights/merged_model_weights.hdf5")
 
-###An example
+### An example
 ```shell
 getGenreFromYoutube.sh https://www.youtube.com/watch?v=VDvr08sCPOc
 ```
