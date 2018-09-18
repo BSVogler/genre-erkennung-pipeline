@@ -10,3 +10,4 @@ query/*
 *.mp3
 results/*
 .idea/*
+.DS_Store
