@@ -6,7 +6,7 @@ if [ "$#" -ne 1 ]; then
 else
 	DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 	#cd $(dirname "$0")
-	cd $DIR
+	cd "$DIR"
 	mkdir query
 	cd query
 	youtube-dl --extract-audio --audio-format mp3 -o "testfile.%(ext)s" $1 #download file
