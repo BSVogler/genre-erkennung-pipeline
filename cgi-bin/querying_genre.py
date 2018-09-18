@@ -159,7 +159,7 @@ def query(filepath, keep=True):
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Detects the genre of a music file.')
-    parser.add_argument('filepath', help='path to file or fodler containing files')
+    parser.add_argument('filepath', help='path to file or folder containing files')
     parser.add_argument('-k', '--keep', action='store_true', dest='keep',
                         help='if set keeps audio files')
     args = parser.parse_args()
