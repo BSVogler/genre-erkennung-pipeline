@@ -12,6 +12,7 @@ else
 	youtube-dl --extract-audio --audio-format mp3 -o "testfile.%(ext)s" $1 #download file
 	printf "\nFile $1 downloaded \n"
 	cd ..
-	python3 ./querying_genre.py query/testfile.mp3 $(cut -d "=" -f 2 <<< "$1") #decode features
+	#$(cut -d "=" -f 2 <<< "$1") #to obtain youtube id
+	python3 ./cgi-bin/querying_genre.py testfile.mp3 #decode features
 	rm -rf query
 fi
