@@ -146,8 +146,19 @@ If you check the folder pickled_vectors you should have your pickled vectors sav
 If it is empty, you probably messed up something. Call the ambulance.
 
 # Training Model
+Training the model is the machine learning step. There are two separate models for the two different features. The models are in two different scripts, mfcc_model.py and spectral-contrast_peaks_model.py. The merged model is in the script prototype_merged.py. You can train each model separately or combining them. Let's try just one model first, then the other one then the merged one.
 
-This is the machine learning step. The most interesting step. There are two separate models for the two different features. The models are in two different scripts, mfcc_model.py and spectral-contrast_peaks_model.py. The merged model is in the script prototype_merged.py. You can train each model separately or combining them. Let's try just one model first, then the other one then the merged one.
+Running the models:
+Now you can run this model with:
+
+CPU theano backend / GPU Tensorflow backend
+```shell
+python3 merged.py
+```
+
+Or if you have theano backend and configured CUDA on your machine, you can also use keras_gpu.sh for the flags.
+
+    sh keras_gpu.sh merged.py
 
 ## MFCC Model
 
@@ -161,18 +172,6 @@ y = pickle.load(open("pickled_vectors/mfcc_coefficients_label.pickle","rb"))
 
 X_test = pickle.load(open("pickled_vectors/mfcc_coefficients_evaluation_training_vector.pickle","rb"))
 y_test = pickle.load(open("pickled_vectors/mfcc_coefficients_evaluation_label.pickle","rb"))
-```
-
-Now you can run this model with:
-
-```shell
-python3 mfcc_model.py
-```
-
-Or if you have configured CUDA on your machine, you can also use keras_gpu.sh. This is probably the wrongest hackiest way to run Theano code with Cuda but, it works for now.
-
-```shell
-sh keras_gpu.sh mfcc_model.py
 ```
 
 You may change the amount of used genres in `mfcc_model.py` by changing `numGenres = 3`.
@@ -189,15 +188,6 @@ y = pickle.load(open("pickled_vectors/spectral-contrast_peaks_label.pickle","rb"
 X_test = pickle.load(open("pickled_vectors/spectral-contrast_peaks_evaluation_training_vector.pickle","rb"))
 y_test = pickle.load(open("pickled_vectors/spectral-contrast_peaks_evaluation_label.pickle","rb"))
 ```
-
-Now you can run this model with:
-```shell
-python spectral_contrast_peaks_model.py
-```
-
-Or if you have configured CUDA on your machine, you can also use keras_gpu.sh. This is probably the wrongest hackiest way to run Theano code with Cuda but, it works for now.
-
-    sh keras_gpu.sh spectral_contrast_peaks_model.py
 
 You may change the amount of used genres in `mfcc_model.py` by changing `numGenres = 3`.
 
@@ -217,16 +207,6 @@ X_2 = pickle.load(open("pickled_vectors/spectral-contrast_peaks_training_vector.
 X_test_2 = pickle.load(open("pickled_vectors/spectral-contrast_peaks_evaluation_training_vector.pickle","rb"))
 ```
 Again, you may have to further edit the number of outputs of your neural network.
-
-Now you can run this model with:
-
-```shell
-python3 merged.py
-```
-
-Or if you have configured CUDA on your machine, you can also use keras_gpu.sh. This is probably the wrongest hackiest way to run Theano code with Cuda but, it works for now.
-
-    sh keras_gpu.sh merged.py
 
 # Querying the Model
 
