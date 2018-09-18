@@ -14,15 +14,15 @@ audio_features = [
                       
 def extract_features(path="."):
     for feature in audio_features:
-        cmd = "sonic-annotator -d {0} {1} -r -w csv --csv-force".format(feature,path)
-        subprocess.call(cmd.split())
+        cmd = "sonic-annotator", "-d", feature, path, "-r", "-w", "csv", "--csv-force"
+        subprocess.call(cmd)
         #p = Popen(cmd.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
         #output, err = p.communicate()
 
 def extract_features_single(path="."):
     for feature in audio_features:
-        cmd = "sonic-annotator -d {0} {1} -w csv --csv-force".format(feature,path)
-        subprocess.call(cmd.split())
+        cmd = "sonic-annotator", "-d", feature, path, "-w", "csv", "--csv-force"
+        subprocess.call(cmd)
 
 if __name__=="__main__":
     # extract_features("dataset/gztan_split_10sec")
