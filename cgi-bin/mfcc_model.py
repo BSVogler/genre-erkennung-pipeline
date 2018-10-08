@@ -106,14 +106,12 @@ if __name__ == "__main__":
 
     # print(X)
     # load vectorized song features
-    #
-    batch_size = 20
-    nb_epoch = 50
-    X = pickle.load(open("pickled_vectors/mfcc_coefficients_training_vector.pickle", "rb"))
-    y = pickle.load(open("pickled_vectors/mfcc_coefficients_label.pickle", "rb"))
+    datasetfolder = "../pickled_vectors"
+    X = pickle.load(open(datasetfolder+"/mfcc_coefficients_training_vector.pickle", "rb"))
+    y = pickle.load(open(datasetfolder+"/mfcc_coefficients_label.pickle", "rb"))
 
-    X_test = pickle.load(open("pickled_vectors/mfcc_coefficients_evaluation_training_vector.pickle", "rb"))
-    y_test = pickle.load(open("pickled_vectors/mfcc_coefficients_evaluation_label.pickle", "rb"))
+    X_test = pickle.load(open(datasetfolder+"/mfcc_coefficients_evaluation_training_vector.pickle", "rb"))
+    y_test = pickle.load(open(datasetfolder+"/mfcc_coefficients_evaluation_label.pickle", "rb"))
 
     model = mfcc_model((X.shape[1], X.shape[2]))
     model.add(Dense(numGenres))
