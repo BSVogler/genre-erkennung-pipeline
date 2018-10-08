@@ -126,11 +126,11 @@ def model(input_shape, concat):
 
 if __name__=="__main__":
     datasetfolder = "../pickled_vectors"
-    X = pickle.load(open(datasetfolder+"/spectral-contrast_peaks_training_vector.pickle","rb"))
-    y = pickle.load(open(datasetfolder+"/datasetfolder/spectral-contrast_peaks_label.pickle","rb"))
+    X = pickle.load(open(datasetfolder + "/spectral-contrast_peaks_training_vector.pickle", "rb"))
+    y = pickle.load(open(datasetfolder + "/spectral-contrast_peaks_label.pickle", "rb"))
 
-    X_test = pickle.load(open(datasetfolder+"/spectral-contrast_peaks_evaluation_training_vector.pickle","rb"))
-    y_test = pickle.load(open(datasetfolder+"/spectral-contrast_peaks_evaluation_label.pickle","rb"))
+    X_test = pickle.load(open(datasetfolder + "/spectral-contrast_peaks_evaluation_training_vector.pickle", "rb"))
+    y_test = pickle.load(open(datasetfolder + "/spectral-contrast_peaks_evaluation_label.pickle", "rb"))
 
     batch_size = 20
     nb_epoch = 50
