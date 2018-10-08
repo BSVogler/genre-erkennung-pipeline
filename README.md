@@ -1,4 +1,7 @@
 # Music Genre Classification Pipeline
+With some keras API changes some sttuff broke. The current combined model does not work. The loading of the architecture does not work, so it has to be rebuild and trained again.
+
+
 Everything using python:
 webAPI → youtube-dl → vamp → keras → webAPI
 
