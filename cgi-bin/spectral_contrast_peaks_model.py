@@ -2,11 +2,11 @@
 import numpy as np
 
 np.random.seed(1337)  # for reproducibility
+import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.layers import Convolution1D, MaxPooling1D
-from keras.layers import LSTM, GRU, Flatten
-import matplotlib as mpl
+from keras.layers import LSTM
 import matplotlib.pyplot as plt
 import pickle
 
@@ -15,7 +15,13 @@ numGenres = 3
 
 # load vectorized song features
 #
-def model(input_shape, concat):
+def model(input_shape, concat=False):
+    """
+
+    :param input_shape:
+    :param concat: when should return whole model use False, if it will be concatenated use True
+    :return:
+    """
     nb_filter = 100
     filter_length = 3
     hidden_dims = 250
@@ -27,21 +33,20 @@ def model(input_shape, concat):
     # print("creating model")
     # create model
     model = Sequential()
-    #
     model.add(Convolution1D(
         input_shape=input_shape,
-        nb_filter=nb_filter,
-        filter_length=filter_length,
-        border_mode='valid',
-        subsample_length=4))
+        filters=nb_filter,
+        kernel_size=filter_length,
+        padding='valid',
+        strides=4))
     model.add(Activation('relu'))
-    model.add(MaxPooling1D(pool_length=pool_length))
+    model.add(MaxPooling1D(pool_size=pool_length))
     model.add(Dropout(0.2))
 
     model.add(LSTM(lstm_output_size,
                    # input_shape=input_shape,
                    activation='sigmoid',
-                   inner_activation='hard_sigmoid',
+                   recurrent_activation='hard_sigmoid',
                    # return_sequences=True
                    ))
 
@@ -87,8 +92,8 @@ def model(input_shape, concat):
     # model.add(Dropout(0.2))
     # model.add(Flatten())
     if not concat:
-        model.add(Dense(numGenres))
-        model.add(Dropout(0.2))
+        model.add(Dense(numGenres,activation='softmax'))
+        #model.add(Dropout(0.2))
     # model.add(Flatten())
     # model.add(LSTM(lstm_output_size))
     return model
@@ -132,11 +137,9 @@ if __name__ == "__main__":
     X_test = pickle.load(open(datasetfolder + "/spectral-contrast_peaks_evaluation_training_vector.pickle", "rb"))
     y_test = pickle.load(open(datasetfolder + "/spectral-contrast_peaks_evaluation_label.pickle", "rb"))
 
-    batch_size = 20
-    nb_epoch = 50
-    model = model((X.shape[1], X.shape[2]))
-    model.add(Dense(numGenres))
-    model.add(Activation('softmax'))
+    model = model((X.shape[1], X.shape[2]), concat=False)
+    #model = keras.layers.Dense(numGenres, activation='softmax')(model)
+    #model = keras.model.Model(inputs=[input1], outputs=out)
 
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
@@ -154,9 +157,11 @@ if __name__ == "__main__":
     # X = np.random.random(X.shape)
     # y = np.random.random(y.shape)
     #
+    batch_size = 70
+    nb_epoch = 50
     history = model.fit(X, y,
                         batch_size=batch_size,
-                        nb_epoch=nb_epoch,
+                        epochs=nb_epoch,
                         validation_data=(X_test, y_test),
                         shuffle=True
                         )
