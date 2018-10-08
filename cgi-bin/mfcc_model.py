@@ -30,20 +30,20 @@ def mfcc_model(input_shape, concat):
 
     model.add(Convolution1D(
         input_shape=input_shape,
-        nb_filter=nb_filter,
-        filter_length=filter_length,
-        border_mode='valid',
-        subsample_length=1))
+        filters=nb_filter,
+        kernel_size=filter_length,
+        padding='valid',
+        strides=1))
     model.add(Activation('relu'))
-    model.add(MaxPooling1D(pool_length=pool_length))
+    model.add(MaxPooling1D(pool_size=pool_length))
     model.add(Dropout(0.4))
     model.add(Convolution1D(
-        nb_filter=int(nb_filter / 5),
-        filter_length=int(filter_length),
-        border_mode='valid',
-        subsample_length=1))
+        filters=int(nb_filter / 5),
+        kernel_size=int(filter_length),
+        padding='valid',
+        strides=1))
     model.add(Activation('relu'))
-    model.add(MaxPooling1D(pool_length=pool_length))
+    model.add(MaxPooling1D(pool_size=pool_length))
     model.add(Dropout(0.4))
     # model.add(Flatten())
     #
@@ -59,7 +59,7 @@ def mfcc_model(input_shape, concat):
     model.add(LSTM(lstm_output_size,
                    # input_shape=input_shape,
                    activation='sigmoid',
-                   inner_activation='hard_sigmoid'))
+                   recurrent_activation='hard_sigmoid'))
     #
     # model.add(Dropout(0.2))
 
@@ -67,7 +67,7 @@ def mfcc_model(input_shape, concat):
     # model.add(LSTM(lstm_output_size))
     model.add(Dropout(0.4))
     if not concat:
-        model.add(Dense(numGenres,activation='softmax'))
+        model.add(Dense(numGenres, activation='softmax'))
         #model.add(Dropout(0.2))
     #
     # model.add(Convolution1D(
@@ -126,11 +126,11 @@ if __name__ == "__main__":
 
     print("Training")
 
-    batch_size = 20
+    batch_size = 60
     nb_epoch = 50
     history = model.fit(X, y,
                         batch_size=batch_size,
-                        nb_epoch=nb_epoch,
+                        epochs=nb_epoch,
                         validation_data=(X_test, y_test),
                         shuffle="batch"
                         )
