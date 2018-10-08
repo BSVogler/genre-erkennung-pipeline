@@ -67,8 +67,8 @@ def mfcc_model(input_shape, concat):
     # model.add(LSTM(lstm_output_size))
     model.add(Dropout(0.4))
     if not concat:
-        model.add(Dense(numGenres))
-        model.add(Dropout(0.2))
+        model.add(Dense(numGenres,activation='softmax'))
+        #model.add(Dropout(0.2))
     #
     # model.add(Convolution1D(
     #                         nb_filter=int(nb_filter/10),
@@ -113,9 +113,7 @@ if __name__ == "__main__":
     X_test = pickle.load(open(datasetfolder+"/mfcc_coefficients_evaluation_training_vector.pickle", "rb"))
     y_test = pickle.load(open(datasetfolder+"/mfcc_coefficients_evaluation_label.pickle", "rb"))
 
-    model = mfcc_model((X.shape[1], X.shape[2]))
-    model.add(Dense(numGenres))
-    model.add(Activation('softmax'))
+    model = mfcc_model((X.shape[1], X.shape[2]), concat=False)
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy']
@@ -126,8 +124,10 @@ if __name__ == "__main__":
     print("X_test", X_test.shape)
     print("y_test", y_test.shape)
 
-    print("Fitting")
+    print("Training")
 
+    batch_size = 20
+    nb_epoch = 50
     history = model.fit(X, y,
                         batch_size=batch_size,
                         nb_epoch=nb_epoch,
