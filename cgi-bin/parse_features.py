@@ -7,7 +7,6 @@ import sys
 from numpy import genfromtxt
 from keras.preprocessing import sequence
 from keras.utils import np_utils
-from sklearn.datasets import dump_svmlight_file
 
 
 # this is probably not the best way to encode
