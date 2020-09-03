@@ -2,11 +2,10 @@
 import numpy as np
 
 np.random.seed(1337)  # for reproducibility
-import keras
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation
-from keras.layers import Convolution1D, MaxPooling1D
-from keras.layers import LSTM
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense, Dropout, Activation
+from tensorflow.python.keras.layers import Convolution1D, MaxPooling1D
+from tensorflow.python.keras.layers import LSTM
 import matplotlib.pyplot as plt
 import pickle
 

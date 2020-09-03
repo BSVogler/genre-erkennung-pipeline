@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import numpy as np
-
+import tensorflow as tf
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense, Concatenate
+from tensorflow.python.keras.callbacks import ModelCheckpoint
 np.random.seed(1337)  # for reproducibility
-from keras.models import Sequential
-from keras.layers import Dense, Concatenate
-from keras.callbacks import ModelCheckpoint
 import matplotlib.pyplot as plt
 import pickle
 import json
@@ -32,9 +32,9 @@ if __name__ == "__main__":
 
     # print("X_1",X_1.shape)
     # print("X_test_1",X_test_1.shape)
-    print("X_1", X_1.shape)
+    print("X_1 (MFCC: items x max length x spectogram)", X_1.shape)
     print("X_test_1", X_test_1.shape)
-    print("X_2", X_2.shape)
+    print("X_2 (spectral contrast: items x peaks x ?)", X_2.shape)
     print("X_test_2", X_test_2.shape)
 
     merged = Concatenate([model_1, model_2])
@@ -43,7 +43,6 @@ if __name__ == "__main__":
     third.add(Dense(100))
     third.add(Dense(numGenres, activation='softmax'))
     final_model = third
-    #final_model = Concatenate([merged,  third])
 
     final_model.compile(
         loss='categorical_crossentropy',
@@ -51,14 +50,9 @@ if __name__ == "__main__":
         metrics=['accuracy']
     )
 
-    from keras.utils import plot_model
-
-    plot_model(model_1, to_file='model1.png')
-    plot_model(model_2, to_file='model2.png')
-    plot_model(final_model, to_file='merged.png')
-    # plot(model_1,to_file="model_1.png")
-    # plot(model_1,to_file="model_1.png")
-    # plot(final_model,to_file="merged_model.png")
+    #tf.keras.utils.plot_model(model_1, to_file='model1.png')
+    #tf.keras.utils.plot_model(model_2, to_file='model2.png')
+    #tf.keras.utils.plot_model(final_model, to_file='merged.png')
 
     # write architecture to file
     #crashes here, also it is not trainable
@@ -93,10 +87,10 @@ if __name__ == "__main__":
     checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
     callbacks_list = [checkpoint]
 
-    history = final_model.fit([X_1, X_2], y,
+    history = final_model.fit((X_1, X_2), y,
                               batch_size=batch_size,
-                              nb_epoch=nb_epoch,
-                              validation_data=([X_test_1, X_test_2], y_test),
+                              epochs=nb_epoch,
+                              validation_data=((X_test_1, X_test_2), y_test),
                               shuffle="batch",
                               callbacks=callbacks_list,
                               )
