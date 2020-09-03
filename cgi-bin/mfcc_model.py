@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
+from tensorflow import keras
 
 np.random.seed(1337)  # for reproducibility
 from tensorflow.python.keras.models import Sequential
@@ -25,69 +26,34 @@ def mfcc_model(input_shape, concat):
     lstm_output_size = 300
 
     # create model
-    model = Sequential()
+    model = keras.Input(shape=input_shape, name="mfcc")
 
-    model.add(Convolution1D(
+    Convolution1D(
         input_shape=input_shape,
         filters=nb_filter,
         kernel_size=filter_length,
         padding='valid',
-        strides=1))
-    model.add(Activation('relu'))
-    model.add(MaxPooling1D(pool_size=pool_length))
-    model.add(Dropout(0.4))
-    model.add(Convolution1D(
+        strides=1)(model)
+    Activation('relu')(model)
+    MaxPooling1D(pool_size=pool_length)(model)
+    Dropout(0.4)(model)
+    Convolution1D(
         filters=int(nb_filter / 5),
         kernel_size=int(filter_length),
         padding='valid',
-        strides=1))
-    model.add(Activation('relu'))
-    model.add(MaxPooling1D(pool_size=pool_length))
-    model.add(Dropout(0.4))
-    # model.add(Flatten())
-    #
-    # model.add(Convolution1D(
-    #                         nb_filter=int(nb_filter/10),
-    #                         filter_length=int(filter_length/20),
-    #                         border_mode='valid',
-    #                         subsample_length=2))
-    # model.add(Activation('relu'))
-    # model.add(MaxPooling1D(pool_length=pool_length))
-    # model.add(Dropout(0.2))
-    #
-    model.add(LSTM(lstm_output_size,
+        strides=1)(model)
+    Activation('relu')(model)
+    MaxPooling1D(pool_size=pool_length)(model)
+    Dropout(0.4)(model)
+
+    LSTM(lstm_output_size,
                    # input_shape=input_shape,
                    activation='sigmoid',
-                   recurrent_activation='hard_sigmoid'))
-    #
-    # model.add(Dropout(0.2))
+                   recurrent_activation='hard_sigmoid')(model)
 
-    # model.add(Flatten())
-    # model.add(LSTM(lstm_output_size))
-    model.add(Dropout(0.4))
+    Dropout(0.4)(model)
     if not concat:
-        model.add(Dense(numGenres, activation='softmax'))
-        #model.add(Dropout(0.2))
-    #
-    # model.add(Convolution1D(
-    #                         nb_filter=int(nb_filter/10),
-    #                         filter_length=int(filter_length/5),
-    #                         border_mode='valid',
-    #                         subsample_length=1))
-    # model.add(Activation('relu'))
-    # model.add(MaxPooling1D(pool_length=pool_length))
-    # model.add(Dropout(0.4))
-
-    # model.add(Lambda(max_1d, output_shape=(nb_filter)))
-    # model.add(LSTM(lstm_output_size))
-    # model.add(Dropout(0.2))
-    # # We add a vanilla hidden layer:
-    # model.add(Activation('relu'))
-    # model.add(Dense(hidden_dims))
-    # model.add(Flatten())
-    # model.add(Dense(200))
-    # model.add(Activation("sigmoid"))
-    # model.add(Dropout(0.2))
+        Dense(numGenres, activation='softmax')(model)
 
     return model
 

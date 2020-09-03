@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import numpy as np
+from tensorflow import keras
 
 np.random.seed(1337)  # for reproducibility
 from tensorflow.python.keras.models import Sequential
@@ -31,102 +32,31 @@ def model(input_shape, concat=False):
 
     # print("creating model")
     # create model
-    model = Sequential()
-    model.add(Convolution1D(
+    model = keras.Input(input_shape, name="spectralconstrastpeaks")
+    Convolution1D(
         input_shape=input_shape,
         filters=nb_filter,
         kernel_size=filter_length,
         padding='valid',
-        strides=4))
-    model.add(Activation('relu'))
-    model.add(MaxPooling1D(pool_size=pool_length))
-    model.add(Dropout(0.2))
+        strides=4)(model)
+    Activation('relu')(model)
+    MaxPooling1D(pool_size=pool_length)(model)
+    Dropout(0.2)(model)
 
-    model.add(LSTM(lstm_output_size,
-                   # input_shape=input_shape,
-                   activation='sigmoid',
-                   recurrent_activation='hard_sigmoid',
-                   # return_sequences=True
-                   ))
+    LSTM(lstm_output_size,
+         # input_shape=input_shape,
+         activation='sigmoid',
+         recurrent_activation='hard_sigmoid',
+         # return_sequences=True
+         )(model)
 
-    model.add(Dropout(0.2))
+    Dropout(0.2)(model)
 
-    #
-    #
-    # # #
-    # # # #
-    # model.add(Convolution1D(
-    #                         nb_filter=int(nb_filter/5),
-    #                         filter_length=int(filter_length/10),
-    #                         border_mode='valid',
-    #                         subsample_length=1))
-    # model.add(Activation('relu'))
-    # model.add(MaxPooling1D(pool_length=pool_length))
-    # model.add(Dropout(0.2))
-
-    # model.add(Flatten())
-    # # #
-    # # #
-    #
-    # model.add(Convolution1D(
-    #                         nb_filter=int(nb_filter/10),
-    #                         filter_length=int(filter_length/20),
-    #                         border_mode='valid',
-    #                         subsample_length=2))
-    # model.add(Activation('relu'))
-    # model.add(MaxPooling1D(pool_length=pool_length))
-    # model.add(Dropout(0.2))
-    #
-    # model.add(LSTM(lstm_output_size,
-    #                 # input_shape=(X.shape[1],X.shape[2]),
-    #                 activation='sigmoid',
-    #                 inner_activation='hard_sigmoid',
-    #                 return_sequences=True
-    #                 ))
-    #
-    #
-    # #
-    # # model.add(Dropout(0.2))
-    #
-    # model.add(Dropout(0.2))
-    # model.add(Flatten())
     if not concat:
-        model.add(Dense(numGenres,activation='softmax'))
-        #model.add(Dropout(0.2))
-    # model.add(Flatten())
-    # model.add(LSTM(lstm_output_size))
+        Dense(numGenres, activation='softmax')(model)
+
     return model
 
-
-# model.add(LSTM(lstm_output_size,
-#                 # input_shape=(X.shape[1],X.shape[2]),
-#                 activation='sigmoid',
-#                 inner_activation='hard_sigmoid',
-#                 # return_sequences=True
-#                 ))
-#
-# model.add(Dropout(0.2))
-#
-# model.add(Convolution1D(
-#                         nb_filter=int(nb_filter/10),
-#                         filter_length=int(filter_length/5),
-#                         border_mode='valid',
-#                         subsample_length=1))
-# model.add(Activation('relu'))
-# model.add(MaxPooling1D(pool_length=pool_length))
-# model.add(Dropout(0.4))
-
-
-# model.add(Lambda(max_1d, output_shape=(nb_filter)))
-# model.add(LSTM(lstm_output_size))
-# model.add(Dropout(0.2))
-# # We add a vanilla hidden layer:
-# model.add(Activation('relu'))
-# model.add(Dense(hidden_dims))
-# model.add(Flatten())
-# model.add(Dense(200))
-# model.add(Activation("sigmoid"))
-# model.add(Dropout(0.2))
 
 if __name__ == "__main__":
     datasetfolder = "../pickled_vectors"
@@ -137,8 +67,8 @@ if __name__ == "__main__":
     y_test = pickle.load(open(datasetfolder + "/spectral-contrast_peaks_evaluation_label.pickle", "rb"))
 
     model = model((X.shape[1], X.shape[2]), concat=False)
-    #model = keras.layers.Dense(numGenres, activation='softmax')(model)
-    #model = keras.model.Model(inputs=[input1], outputs=out)
+    # model = keras.layers.Dense(numGenres, activation='softmax')(model)
+    # model = keras.model.Model(inputs=[input1], outputs=out)
 
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',

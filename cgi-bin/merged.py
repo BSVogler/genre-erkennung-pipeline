@@ -37,12 +37,10 @@ if __name__ == "__main__":
     print("X_2 (spectral contrast: items x peaks x ?)", X_2.shape)
     print("X_test_2", X_test_2.shape)
 
-    merged = Concatenate([model_1, model_2])
-    third = Sequential()
-    third.add(merged)
-    third.add(Dense(100))
-    third.add(Dense(numGenres, activation='softmax'))
-    final_model = third
+    merged = keras.layers.concatenate([model_1, model_2])
+    x = keras.layers.Dense(100)(merged)
+    x = keras.layers.Dense(numGenres, activation='softmax')(x)
+    final_model = x
 
     final_model.compile(
         loss='categorical_crossentropy',
