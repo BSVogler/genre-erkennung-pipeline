@@ -1,6 +1,8 @@
 #!/usr/local/bin/python3
 import os
 import re
+from typing import Tuple
+
 import numpy as np
 import pickle
 import sys
@@ -29,7 +31,7 @@ def vectorize_song_feature(filepath):
     song_features = genfromtxt(filepath, delimiter=",")
 
 
-def create_dataset(dataset_path, keyword=None, lower_limit=None, upper_limit=None, verbose=True, categorical=True):
+def create_dataset(dataset_path, keyword=None, lower_limit=None, upper_limit=None, verbose=True, categorical=True) -> Tuple:
     training_vector = []
     labels = []
 
