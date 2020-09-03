@@ -40,7 +40,7 @@ def create_dataset(dataset_path, keyword=None, lower_limit=None, upper_limit=Non
     # print(dataset_path)
     for root, dirs, files in os.walk(dataset_path, topdown=False):
         for name in files:
-            if re.search("{0}.csv".format(keyword), name):
+            if re.search(keyword+".csv", name):
                 song_path = (os.path.join(root, name))
                 if verbose:
                     print(song_path)
@@ -70,11 +70,11 @@ def build_vectors(keyword="", data_label="", lower_limit=None, upper_limit=None,
 
     # validation
     evaluation_training_vector, evaluation_labels, maxlen_evaluation = create_dataset(
-        dataset_path="{0}/test".format(folder_path), keyword=keyword, lower_limit=lower_limit, upper_limit=upper_limit)
+        dataset_path=folder_path+"/test", keyword=keyword, lower_limit=lower_limit, upper_limit=upper_limit)
 
     # # X_training
-    training_vector = sequence.pad_sequences(training_vector, maxlen=np.max([maxlen_training, maxlen_evaluation]),
-                                             dtype='float32')
+    maxlen = np.max([maxlen_training, maxlen_evaluation])
+    training_vector = sequence.pad_sequences(training_vector, maxlen=maxlen, dtype='float32')
     # write to file
     training_file = open(f"pickled_vectors/{data_label}{keyword}_training_vector.pickle","wb")
     pickle.dump(training_vector, training_file)
@@ -84,7 +84,7 @@ def build_vectors(keyword="", data_label="", lower_limit=None, upper_limit=None,
 
     # evaluation
     evaluation_training_vector = sequence.pad_sequences(evaluation_training_vector,
-                                                        maxlen=np.max([maxlen_training, maxlen_evaluation]),
+                                                        maxlen=maxlen,
                                                         dtype='float32')
     evalFile = open(f"pickled_vectors/{data_label}{keyword}_evaluation_training_vector.pickle", "wb")
     pickle.dump(evaluation_training_vector, evalFile)
@@ -92,8 +92,8 @@ def build_vectors(keyword="", data_label="", lower_limit=None, upper_limit=None,
     # # evaluation
     pickle.dump(evaluation_labels,
                 open(f"pickled_vectors/{data_label}{keyword}_evaluation_label.pickle", "wb"))
-    with(open(f"maxlen_{keyword}", "w")) as _f:
-        _f.write(str(np.max([maxlen_training, maxlen_evaluation])))
+    with(open(f"maxlen_{keyword}", "w")) as f:
+        f.write(str(maxlen))
 
 
 if __name__ == "__main__":
