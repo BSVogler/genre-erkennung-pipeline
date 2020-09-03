@@ -49,9 +49,9 @@ if __name__ == "__main__":
         metrics=['accuracy']
     )
 
-    #tf.keras.utils.plot_model(model_1, to_file='model1.png')
-    #tf.keras.utils.plot_model(model_2, to_file='model2.png')
-    #tf.keras.utils.plot_model(final_model, to_file='merged.png')
+    #tf.keras.utils.plot_model(model_1, to_file='model1.png', show_shapes=True)
+    #tf.keras.utils.plot_model(model_2, to_file='model2.png', show_shapes=True)
+    #tf.keras.utils.plot_model(final_model, to_file='merged.png', show_shapes=True)
 
     # write architecture to file
     #crashes here, also it is not trainable
