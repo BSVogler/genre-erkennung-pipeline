@@ -54,10 +54,7 @@ if __name__ == "__main__":
     #tf.keras.utils.plot_model(final_model, to_file='merged.png', show_shapes=True)
 
     # write architecture to file
-    #crashes here, also it is not trainable
-    json_string = final_model.to_json()
-    with open("../model_architecture/merged_model_architecture.json", "w") as f:
-        f.write(json.dumps(json_string, sort_keys=True, indent=4, separators=(',', ': ')))
+    final_model.save("../model_architecture/merged_model_architecture.json")
 
     print("Training")
     if not os.path.exists("model_weights"):
