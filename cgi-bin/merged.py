@@ -33,9 +33,9 @@ if __name__ == "__main__":
 
     # print("X_1",X_1.shape)
     # print("X_test_1",X_test_1.shape)
-    print("X_1 (MFCC: items x max length x spectogram)", X_1.shape)
+    print("X_1 (MFCC: items x max length x buckets)", X_1.shape)
     print("X_test_1", X_test_1.shape)
-    print("X_2 (spectral contrast: items x peaks x ?)", X_2.shape)
+    print("X_2 (spectral contrast: items x peaks x buckets)", X_2.shape)
     print("X_test_2", X_test_2.shape)
 
     #crashes because input shape can not be generated using input_shapes = tf_utils.convert_shapes(inputs, to_tuples=False)
