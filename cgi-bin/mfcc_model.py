@@ -28,32 +28,32 @@ def mfcc_model(input_shape, concat):
     # create model
     model = keras.Input(shape=input_shape, name="mfcc")
 
-    Convolution1D(
+    model = Convolution1D(
         input_shape=input_shape,
         filters=nb_filter,
         kernel_size=filter_length,
         padding='valid',
         strides=1)(model)
-    Activation('relu')(model)
-    MaxPooling1D(pool_size=pool_length)(model)
-    Dropout(0.4)(model)
-    Convolution1D(
+    model = Activation('relu')(model)
+    model = MaxPooling1D(pool_size=pool_length)(model)
+    model = Dropout(0.4)(model)
+    model = Convolution1D(
         filters=int(nb_filter / 5),
         kernel_size=int(filter_length),
         padding='valid',
         strides=1)(model)
-    Activation('relu')(model)
-    MaxPooling1D(pool_size=pool_length)(model)
-    Dropout(0.4)(model)
+    model = Activation('relu')(model)
+    model = MaxPooling1D(pool_size=pool_length)(model)
+    model = Dropout(0.4)(model)
 
-    LSTM(lstm_output_size,
+    model = LSTM(lstm_output_size,
                    # input_shape=input_shape,
                    activation='sigmoid',
                    recurrent_activation='hard_sigmoid')(model)
 
-    Dropout(0.4)(model)
+    model = Dropout(0.4)(model)
     if not concat:
-        Dense(numGenres, activation='softmax')(model)
+        model = Dense(numGenres, activation='softmax')(model)
 
     return model
 

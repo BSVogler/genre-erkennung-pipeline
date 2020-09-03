@@ -33,27 +33,27 @@ def model(input_shape, concat=False):
     # print("creating model")
     # create model
     model = keras.Input(input_shape, name="spectralconstrastpeaks")
-    Convolution1D(
+    model = Convolution1D(
         input_shape=input_shape,
         filters=nb_filter,
         kernel_size=filter_length,
         padding='valid',
         strides=4)(model)
-    Activation('relu')(model)
-    MaxPooling1D(pool_size=pool_length)(model)
-    Dropout(0.2)(model)
+    model = Activation('relu')(model)
+    model = MaxPooling1D(pool_size=pool_length)(model)
+    model = Dropout(0.2)(model)
 
-    LSTM(lstm_output_size,
+    model = LSTM(lstm_output_size,
          # input_shape=input_shape,
          activation='sigmoid',
          recurrent_activation='hard_sigmoid',
          # return_sequences=True
          )(model)
 
-    Dropout(0.2)(model)
+    model = Dropout(0.2)(model)
 
     if not concat:
-        Dense(numGenres, activation='softmax')(model)
+        model = Dense(numGenres, activation='softmax')(model)
 
     return model
 

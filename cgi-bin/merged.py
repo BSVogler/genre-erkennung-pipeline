@@ -41,7 +41,7 @@ if __name__ == "__main__":
     merged = keras.layers.concatenate([model_1, model_2])
     x = keras.layers.Dense(100)(merged)
     x = keras.layers.Dense(numGenres, activation='softmax')(x)
-    final_model = x
+    final_model = keras.Model(x)
 
     final_model.compile(
         loss='categorical_crossentropy',
