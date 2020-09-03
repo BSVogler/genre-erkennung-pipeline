@@ -38,10 +38,11 @@ if __name__ == "__main__":
     print("X_2 (spectral contrast: items x peaks x ?)", X_2.shape)
     print("X_test_2", X_test_2.shape)
 
-    merged = keras.layers.concatenate([model_1, model_2])
+    #crashes because input shape can not be generated using input_shapes = tf_utils.convert_shapes(inputs, to_tuples=False)
+    merged = keras.layers.Concatenate()([model_1, model_2])
     x = keras.layers.Dense(100)(merged)
     x = keras.layers.Dense(numGenres, activation='softmax')(x)
-    final_model = keras.Model(x)
+    final_model = keras.Model(inputs=merged.input, outputs=x)
 
     final_model.compile(
         loss='categorical_crossentropy',
