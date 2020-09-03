@@ -26,14 +26,14 @@ def mfcc_model(input_shape, concat):
     lstm_output_size = 300
 
     # create model
-    model = keras.Input(shape=input_shape, name="mfcc")
+    inputs = keras.Input(shape=input_shape, name="mfcc")
 
     model = Convolution1D(
         input_shape=input_shape,
         filters=nb_filter,
         kernel_size=filter_length,
         padding='valid',
-        strides=1)(model)
+        strides=1)(inputs)
     model = Activation('relu')(model)
     model = MaxPooling1D(pool_size=pool_length)(model)
     model = Dropout(0.4)(model)
@@ -54,7 +54,7 @@ def mfcc_model(input_shape, concat):
     model = Dropout(0.4)(model)
     if not concat:
         model = Dense(numGenres, activation='softmax')(model)
-
+    model = keras.Model(inputs=inputs, outputs=model)
     return model
 
 

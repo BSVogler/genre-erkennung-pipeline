@@ -32,13 +32,13 @@ def model(input_shape, concat=False):
 
     # print("creating model")
     # create model
-    model = keras.Input(input_shape, name="spectralconstrastpeaks")
+    inputs = keras.Input(input_shape, name="spectralconstrastpeaks")
     model = Convolution1D(
         input_shape=input_shape,
         filters=nb_filter,
         kernel_size=filter_length,
         padding='valid',
-        strides=4)(model)
+        strides=4)(inputs)
     model = Activation('relu')(model)
     model = MaxPooling1D(pool_size=pool_length)(model)
     model = Dropout(0.2)(model)
@@ -54,7 +54,7 @@ def model(input_shape, concat=False):
 
     if not concat:
         model = Dense(numGenres, activation='softmax')(model)
-
+    model = keras.Model(inputs=inputs, outputs=model)
     return model
 
 
