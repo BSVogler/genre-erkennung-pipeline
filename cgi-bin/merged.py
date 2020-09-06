@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dense, Concatenate
+from tensorflow.python.keras.layers import Dense, Concatenate, Convolution1D, Activation, MaxPooling1D, Dropout, LSTM
 from tensorflow.python.keras.callbacks import ModelCheckpoint
 np.random.seed(1337)  # for reproducibility
 import matplotlib.pyplot as plt
@@ -28,21 +28,68 @@ if __name__ == "__main__":
     X_2 = pickle.load(open(datasetfolder + "/spectral-contrast_peaks_training_vector.pickle", "rb"))
     X_test_2 = pickle.load(open(datasetfolder + "/spectral-contrast_peaks_evaluation_training_vector.pickle", "rb"))
 
-    model_1 = mfcc_model.mfcc_model((X_1.shape[1], X_1.shape[2]), True)
-    model_2 = spectral_contrast_peaks_model.model((X_2.shape[1], X_2.shape[2]), True)
-
-    # print("X_1",X_1.shape)
-    # print("X_test_1",X_test_1.shape)
     print("X_1 (MFCC: items x max length x buckets)", X_1.shape)
     print("X_test_1", X_test_1.shape)
     print("X_2 (spectral contrast: items x peaks x buckets)", X_2.shape)
     print("X_test_2", X_test_2.shape)
 
     #crashes because input shape can not be generated using input_shapes = tf_utils.convert_shapes(inputs, to_tuples=False)
-    merged = keras.layers.Concatenate()([model_1, model_2])
+    pool_length = 4
+
+    mfcc_shape = X_1.shape[1:]#conv on 2d
+    sc_shape = X_2.shape[1:]#conv on 2d
+    # create model
+    input_mfcc = keras.Input(shape=mfcc_shape, name="mfcc_input")
+
+    conf_mfcc = Convolution1D(
+        input_shape=mfcc_shape,
+        filters=100,
+        kernel_size=4,
+        padding='valid',
+        strides=1)(input_mfcc)
+    model_mfcc = Activation('relu')(conf_mfcc)
+    model_mfcc = MaxPooling1D(pool_size=pool_length)(model_mfcc)
+    model_mfcc = Dropout(0.4)(model_mfcc)
+    model_mfcc = Convolution1D(
+        filters=20,
+        kernel_size=4,
+        padding='valid',
+        strides=1)(model_mfcc)
+    model_mfcc = Activation('relu')(model_mfcc)
+    model_mfcc = MaxPooling1D(pool_size=pool_length)(model_mfcc)
+    model_mfcc = Dropout(0.4)(model_mfcc)
+
+    model_mfcc = LSTM(300,
+                 # input_shape=input_shape,
+                 activation='sigmoid',
+                 recurrent_activation='hard_sigmoid')(model_mfcc)
+
+    model_mfcc = Dropout(0.4)(model_mfcc)
+
+    inputs_scp = keras.Input(sc_shape, name="spectralconstrastpeaks")
+    model = Convolution1D(
+        batch_input_shape=sc_shape,
+        filters=100,
+        kernel_size=3,
+        padding='valid',
+        strides=4)(inputs_scp)
+    model = Activation('relu')(model)
+    model = MaxPooling1D(pool_size=1)(model)
+    model = Dropout(0.2)(model)
+
+    model_spc = LSTM(100,
+                 # input_shape=input_shape,
+                 activation='sigmoid',
+                 recurrent_activation='hard_sigmoid',
+                 # return_sequences=True
+                 )(model)
+
+    model_spc = Dropout(0.2)(model_spc)
+
+    merged = keras.layers.Concatenate()([model_mfcc, model_spc])
     x = keras.layers.Dense(100)(merged)
     x = keras.layers.Dense(numGenres, activation='softmax')(x)
-    final_model = keras.Model(inputs=merged.input, outputs=x)
+    final_model = keras.Model(inputs=(input_mfcc,inputs_scp), outputs=x)
 
     final_model.compile(
         loss='categorical_crossentropy',
@@ -52,10 +99,6 @@ if __name__ == "__main__":
 
     #tf.keras.utils.plot_model(model_1, to_file='model1.png', show_shapes=True)
     #tf.keras.utils.plot_model(model_2, to_file='model2.png', show_shapes=True)
-    #tf.keras.utils.plot_model(final_model, to_file='merged.png', show_shapes=True)
-
-    # write architecture to file
-    final_model.save("../model_architecture/merged_model_architecture.json")
 
     print("Training")
     if not os.path.exists("model_weights"):
@@ -93,6 +136,9 @@ if __name__ == "__main__":
                               )
     print("saving final result")
     final_model.save_weights("model_weights/merged_model_weights.hdf5", overwrite=True)
+
+    # write architecture to file
+    final_model.save("../model_architecture/merged_model_architecture.json")
 
     with open("experimental_results.json", "w") as f:
         f.write(json.dumps(history.history, sort_keys=True, indent=4, separators=(',', ': ')))
