@@ -13,7 +13,7 @@ import os
 
 if __name__ == "__main__":
     batch_size = 50
-    nb_epoch = 300
+    nb_epoch = 200
     numGenres = 3
 
     print("creating model")
