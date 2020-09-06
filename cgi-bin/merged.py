@@ -9,8 +9,6 @@ np.random.seed(1337)  # for reproducibility
 import matplotlib.pyplot as plt
 import pickle
 import json
-import mfcc_model
-import spectral_contrast_peaks_model
 import os
 
 if __name__ == "__main__":
