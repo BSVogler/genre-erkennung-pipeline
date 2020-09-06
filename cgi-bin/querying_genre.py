@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import os
 import sys
 
 args = []
@@ -24,33 +25,33 @@ def query(filepath, keep=True):
 
     id = os.path.splitext(os.path.basename(filepath))[0]
 
-    print("The song path: " + filepath)
-    song_folder = os.path.dirname(os.path.realpath(filepath))  # should get the directory to the file
-    print("The song folder is: " + song_folder)
+    print("The song path: " + os.path.realpath(filepath))
+    song_dir = os.path.dirname(os.path.realpath(filepath))  # should get the directory to the file
+    print("The song dir is: " + song_dir)
 
     modelWeightsPath = "./model_weights/merged_model_weights.hdf5"
     if not os.path.exists(modelWeightsPath):
-        print("No model weights found in path '" + os.path.dirname(os.path.realpath(modelWeightsPath)) + "'")
+        print("No model weights found in path '" + os.path.realpath(modelWeightsPath) + "'")
     else:
         from split_30_seconds import batch_thirty_seconds, thirty_seconds
         from extract_features import extract_features
 
-        if not os.path.exists(song_folder + "/split" + id):
-            os.makedirs(song_folder + "/split" + id)
-            print("create folder " + song_folder + "/split" + id + " for split file parts")
+        if not os.path.exists(song_dir + "/split" + id):
+            os.makedirs(song_dir + "/split" + id)
+            print("create folder " + song_dir + "/split" + id + " for split file parts")
 
         if os.path.isdir(filepath):
             print("Splitting files in folder")
-            batch_thirty_seconds(song_folder)
+            batch_thirty_seconds(song_dir)
             print("Now extracting features.")
-            extract_features(song_folder)
+            extract_features(song_dir)
         else:
             print("Splitting file: " + filepath)
-            thirty_seconds(song_folder + "/" + os.path.basename(filepath), not keep)
+            thirty_seconds(song_dir + "/" + os.path.basename(filepath), not keep)
             if not os.path.isfile(
-                    song_folder + "/split" + id + "/000_vamp_bbc-vamp-plugins_bbc-spectral-contrast_peaks.csv"):
+                    song_dir + "/split" + id + "/000_vamp_bbc-vamp-plugins_bbc-spectral-contrast_peaks.csv"):
                 print("Now extracting features.")
-                extract_features(song_folder + "/split" + id + "/")
+                extract_features(song_dir + "/split" + id + "/")
             else:
                 print("Skipping feature extraction because feature file was found.")
         from keras.models import model_from_json, Sequential
@@ -69,7 +70,7 @@ def query(filepath, keep=True):
 
         # mfcc coefficients
         vector_mfcc = []
-        for root, dirs, files in os.walk(song_folder, topdown=False):
+        for root, dirs, files in os.walk(song_dir, topdown=False):
             for name in files:
                 if re.search("mfcc_coefficients.csv", name):
                     song_path = (os.path.join(root, name))
@@ -92,7 +93,7 @@ def query(filepath, keep=True):
 
         # Spectral contrast peaks
         vectorSCP = []
-        for root, dirs, files in os.walk(song_folder, topdown=False):
+        for root, dirs, files in os.walk(song_dir, topdown=False):
             for name in files:
                 if re.search("spectral-contrast_peaks.csv", name):
                     song_path = (os.path.join(root, name))
@@ -175,4 +176,9 @@ if __name__ == "__main__":
     if args.filepath is None:
         print("missing parameters")
         sys.exit()
-    query(args.filepath, args.keep is not None)
+
+    songpath = os.path.realpath(args.filepath) #get absolute path before changing cwd
+    abspath = os.path.abspath(__file__)
+    dname = os.path.dirname(abspath)
+    os.chdir(dname)
+    query(songpath, args.keep is not None)
