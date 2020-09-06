@@ -95,6 +95,7 @@ if __name__ == "__main__":
         metrics=['accuracy']
     )
 
+    #tf.keras.utils.plot_model(final_model, to_file='merged.png', show_shapes=True)
 
     print("Training")
     if not os.path.exists("model_weights"):
