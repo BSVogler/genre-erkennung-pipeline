@@ -76,9 +76,9 @@ def query(filepath, keep=True):
 
                     song_features = genfromtxt(song_path, delimiter=",")
 
-                    if len(song_features.shape) is 2:
+                    if len(song_features.shape) == 2:
                         song_features = np.array([_line[1:] for _line in song_features])
-                    elif len(song_features.shape) is 1:
+                    elif len(song_features.shape) == 1:
                         song_features = np.array([song_features[1:]])
 
                     vector_mfcc.append(song_features)
@@ -98,9 +98,9 @@ def query(filepath, keep=True):
                     song_path = (os.path.join(root, name))
                     song_features = genfromtxt(song_path, delimiter=",")
 
-                    if len(song_features.shape) is 2:
+                    if len(song_features.shape) == 2:
                         song_features = np.array([_line[1:] for _line in song_features])
-                    elif len(song_features.shape) is 1:
+                    elif len(song_features.shape) == 1:
                         song_features = np.array([song_features[1:]])
 
                     vectorSCP.append(song_features)
