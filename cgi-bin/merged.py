@@ -121,8 +121,8 @@ if __name__ == "__main__":
         os.makedirs("model_weights")
 
     # checkpoint
-    filepath = "weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
-    checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+    filepath = "weights-improvement-{epoch:02d}-{val_accuracy:.2f}.hdf5"
+    checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
     callbacks_list = [checkpoint]
 
     history = final_model.fit((X_1, X_2), y,
