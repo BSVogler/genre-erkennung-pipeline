@@ -1,3 +1,4 @@
 sklearn
 matplotlib
 h5py
+numpy
