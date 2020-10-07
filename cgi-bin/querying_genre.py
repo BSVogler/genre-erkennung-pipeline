@@ -15,6 +15,7 @@ def query(filepath, keep=True):
     """
     import numpy as np
     np.random.seed(1337)  # for reproducibility
+    modelarchdir = "model_architecture"
 
     import os
     import re
@@ -58,7 +59,7 @@ def query(filepath, keep=True):
         from keras.preprocessing import sequence
 
         import json
-        with open("model_architecture/merged_model_architecture.json", "r") as modelfile:
+        with open(modelarchdir+"/merged_model_architecture.json", "r") as modelfile:
             json_string = json.load(modelfile)
         model = model_from_json(json_string)
         model.load_weights(modelWeightsPath)
@@ -85,11 +86,12 @@ def query(filepath, keep=True):
                     vector_mfcc.append(song_features)
 
         mfcc_max_len = 0
-        with(open("maxlen_mfcc_coefficients", "r")) as _f:
-            mfcc_max_len = int(_f.read())
+        with(open(modelarchdir+"maxlen.json", "r")) as _f:
+            maxvalues = json.load(_f)
+
 
         x = []
-        x.append(sequence.pad_sequences(vector_mfcc, maxlen=mfcc_max_len, dtype='float32'))
+        x.append(sequence.pad_sequences(vector_mfcc, maxlen=maxvalues["mfcc_coefficients"], dtype='float32'))
 
         # Spectral contrast peaks
         vectorSCP = []
@@ -106,11 +108,7 @@ def query(filepath, keep=True):
 
                     vectorSCP.append(song_features)
 
-        spectral_max_len = 0
-        with(open("maxlen_spectral-contrast_peaks", "r")) as _f:
-            spectral_max_len = int(_f.read())
-
-        x.append(sequence.pad_sequences(vectorSCP, maxlen=spectral_max_len, dtype='float32'))
+        x.append(sequence.pad_sequences(vectorSCP, maxlen=maxvalues["spectral-contrast_peaks"], dtype='float32'))
 
         # Spectral contrast valleys
         '''x.append([])
@@ -127,11 +125,8 @@ def query(filepath, keep=True):
 
                     x[2].append(song_features)
 
-        spectral_max_len = 0
-        with( open("maxlen_spectral-contrast_peaks","r") ) as _f:
-            spectral_max_len = int(_f.read())
 
-        x[2] = sequence.pad_sequences(x[2], maxlen=spectral_max_len, dtype='float32')'''
+        x[2] = sequence.pad_sequences(x[2], maxlen=maxvalues["spectral-contrast_peaks"], dtype='float32')'''
 
         predictions = model.predict_classes(x)
         genredict = ["hiphop", "pop", "rock"]
