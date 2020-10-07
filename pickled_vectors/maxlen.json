@@ -1,6 +1,1 @@
-{
-  "spectral-contrast_peaks":  2814,
-  "spectral-contrast_valleys":  940,
-  "mfcc_coefficients":  1407,
-  "adaptivespectrogram_output":20
-}
+{"spectral-contrast_peaks": 2814, "mfcc_coefficients": 1407}
