@@ -55,7 +55,7 @@ def query(filepath, keep=True):
                 extract_features(song_dir + "/split" + id + "/")
             else:
                 print("Skipping feature extraction because feature file was found.")
-        from keras.models import model_from_json, Sequential
+        from keras.models import model_from_json
         from keras.preprocessing import sequence
 
         import json
