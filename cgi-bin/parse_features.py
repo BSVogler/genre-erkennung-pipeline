@@ -29,7 +29,7 @@ def vectorize_song_feature(filepath):
     song_features = np.genfromtxt(filepath, delimiter=",")
 
 
-def create_dataset(dataset_path, feature=None, lower_limit=None, upper_limit=None, verbose=True, categorical=True) -> Tuple:
+def create_dataset(dataset_path: str, feature=None, lower_limit=None, upper_limit=None, verbose=True, categorical=True) -> Tuple:
     """
     Obtain numpy vector from csv datapoints.
     :param dataset_path:
@@ -43,8 +43,12 @@ def create_dataset(dataset_path, feature=None, lower_limit=None, upper_limit=Non
     training_vector = []
     labels = []
 
+    if not os.path.isdir(dataset_path):
+        print("dataset could not be found")
+
+    #start with lower dirs
     for root, dirs, files in os.walk(dataset_path, topdown=False):
-        genres = [_dir for _dir in dirs]
+        genres = [genre for genre in dirs]
     print("genres", genres)
     for root, dirs, files in os.walk(dataset_path, topdown=False):
         for name in files:
@@ -70,23 +74,23 @@ def create_dataset(dataset_path, feature=None, lower_limit=None, upper_limit=Non
     return training_vector, labels, maxlen
 
 
-def build_vectors(feature="", data_label="", lower_limit=None, upper_limit=None, folder_path="dataset"):
+def build_vectors(feature="", data_label="", lower_limit=None, upper_limit=None, dir_path: str = "dataset"):
     """
     write training vectors to pickle files
     :param feature:
     :param data_label:
     :param lower_limit:
     :param upper_limit:
-    :param folder_path:
+    :param dir_path:
     :return:
     """
     # training
-    training_vector, labels, maxlen_training = create_dataset(dataset_path=folder_path + "/train", feature=feature,
+    training_vector, labels, maxlen_training = create_dataset(dataset_path=dir_path + "/train", feature=feature,
                                                               lower_limit=lower_limit, upper_limit=upper_limit)
 
     # validation
     evaluation_training_vector, evaluation_labels, maxlen_evaluation = create_dataset(
-        dataset_path=folder_path+"/test",
+        dataset_path=dir_path + "/test",
         feature=feature,
         lower_limit=lower_limit,
         upper_limit=upper_limit
@@ -125,8 +129,8 @@ if __name__ == "__main__":
         path = sys.argv[1]
         if not os.path.exists("pickled_vectors"):
             os.makedirs("pickled_vectors")
-        build_vectors(folder_path=path, feature="spectral-contrast_peaks", lower_limit=1)
-        build_vectors(folder_path=path, feature="mfcc_coefficients", lower_limit=1)
+        build_vectors(dir_path=path, feature="spectral-contrast_peaks", lower_limit=1)
+        build_vectors(dir_path=path, feature="mfcc_coefficients", lower_limit=1)
         # build_vectors(keyword="tempotracker_tempo",upper_limit=-1)
         # create_dataset("dataset/my_dataset",keyword="spectral-contrast_peaks",lower_limit=1)
         # create_dataset("dataset/my_dataset",keyword="mfcc_coefficients",lower_limit=1)
