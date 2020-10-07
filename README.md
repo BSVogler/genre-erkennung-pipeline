@@ -1,11 +1,17 @@
 # Music Genre Classification Pipeline
-With some keras API changes some stuff broke. The current combined model does not work. The loading of the architecture does not work, so it has to be rebuild and trained again.
-
-
-Everything using python:
-webAPI → youtube-dl → vamp → keras → webAPI
+The pipeline is managed with python. The webAPI can be accessed with a web view.
+```
+webAPI → youtube-dl
+                 ↓
+webAPI ← keras ← vamp
+```
 
 [Demo Video](https://www.youtube.com/watch?v=fLe6uyDHeCE)
+
+
+Current known issues:
+The webserver does not serve python files.
+
 
 ## dependencies:
 youtube-dl, vamp
