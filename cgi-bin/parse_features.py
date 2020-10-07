@@ -10,6 +10,9 @@ import sys
 from keras.preprocessing import sequence
 from keras.utils import np_utils
 
+"""
+A class used to parse the feature csv files for later processing with numpy.
+"""
 
 def vectorize_song_feature(filepath):
     song_features = np.genfromtxt(filepath, delimiter=",")
