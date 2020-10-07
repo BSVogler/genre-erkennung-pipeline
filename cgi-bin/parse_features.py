@@ -11,12 +11,12 @@ from keras.preprocessing import sequence
 from keras.utils import np_utils
 
 
-
 def vectorize_song_feature(filepath):
     song_features = np.genfromtxt(filepath, delimiter=",")
 
 
-def create_dataset(dataset_path: str, feature=None, lower_limit=None, upper_limit=None, verbose=False, categorical=True) -> Tuple:
+def create_dataset(dataset_path: str, feature=None, lower_limit=None, upper_limit=None, verbose=False,
+                   categorical=True) -> Tuple:
     """
     Obtain numpy vector from csv datapoints.
     :param dataset_path:
@@ -33,17 +33,17 @@ def create_dataset(dataset_path: str, feature=None, lower_limit=None, upper_limi
     if not os.path.isdir(dataset_path):
         print("dataset could not be found")
 
-    #start with lower dirs
+    # start with lower dirs
     for root, dirs, files in os.walk(dataset_path, topdown=False):
         genres = [genre for genre in dirs]
     print("genres", genres)
     idx = 0
     for root, dirs, files in os.walk(dataset_path, topdown=False):
-        if root!=dataset_path:#ignore top level
+        if root != dataset_path:  # ignore top level
             genre = os.path.basename(root)
-            print("Processing: "+genre)
+            print("Processing: " + genre)
             for name in files:
-                #identify the feature files
+                # identify the feature files
                 if re.search(feature + ".csv", name):
                     song_path = os.path.join(root, name)
                     if verbose:
@@ -87,30 +87,29 @@ def build_vectors(feature="", data_label="", lower_limit=None, upper_limit=None,
         upper_limit=upper_limit
     )
 
-    pickledir = "pickled_vectors/"
     # X_training
     maxlen = np.max([maxlen_training, maxlen_evaluation])
     training_vector = sequence.pad_sequences(training_vector, maxlen=maxlen, dtype='float32')
     # write to file
-    training_file = open(pickledir+f"{data_label}{feature}_training_vector.pickle", "wb")
+    training_file = open(pickledir + f"{data_label}{feature}_training_vector.pickle", "wb")
     pickle.dump(training_vector, training_file)
     # write y
-    label_file = open(pickledir+f"{data_label}{feature}_label.pickle", "wb")
+    label_file = open(pickledir + f"{data_label}{feature}_label.pickle", "wb")
     pickle.dump(labels, label_file)
 
     # evaluation
     evaluation_training_vector = sequence.pad_sequences(evaluation_training_vector,
                                                         maxlen=maxlen,
                                                         dtype='float32')
-    evalFile = open(pickledir+f"{data_label}{feature}_evaluation_training_vector.pickle", "wb")
+    evalFile = open(pickledir + f"{data_label}{feature}_evaluation_training_vector.pickle", "wb")
     pickle.dump(evaluation_training_vector, evalFile)
 
     # # evaluation
     pickle.dump(evaluation_labels,
-                open(pickledir+f"{data_label}{feature}_evaluation_label.pickle", "wb"))
+                open(pickledir + f"{data_label}{feature}_evaluation_label.pickle", "wb"))
 
     maxlendict[feature] = int(maxlen)
-    with open(pickledir+"maxlen.json", 'w') as f:
+    with open(pickledir + "maxlen.json", 'w') as f:
         json.dump(maxlendict, f)
 
 
@@ -120,8 +119,9 @@ if __name__ == "__main__":
         print("missing parameter for dataset path")
     else:
         path = sys.argv[1]
-        if not os.path.exists("pickled_vectors"):
-            os.makedirs("pickled_vectors")
+        pickledir = "../pickled_vectors/"
+        if not os.path.exists(pickledir):
+            os.makedirs(pickledir)
         maxlendict = {}
         build_vectors(dir_path=path, feature="spectral-contrast_peaks", lower_limit=1)
         build_vectors(dir_path=path, feature="mfcc_coefficients", lower_limit=1)
