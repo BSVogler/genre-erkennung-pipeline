@@ -15,7 +15,7 @@ def query(filepath, keep=True):
     """
     import numpy as np
     np.random.seed(1337)  # for reproducibility
-    modelarchdir = "model_architecture"
+    datasetpath = "pickled_vectors"
 
     import os
     import re
