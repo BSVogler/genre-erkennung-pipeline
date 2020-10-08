@@ -3,7 +3,6 @@ __pycache__/
 dataset/*
 raw/*
 ngetest/*
-model_weights/*
 split/*
 query/*
 *~
