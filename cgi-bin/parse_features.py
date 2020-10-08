@@ -53,11 +53,7 @@ def create_dataset(dataset_path: str, feature=None, lower_limit=None, upper_limi
                         print(song_path)
 
                     song_features = np.genfromtxt(song_path, delimiter=",")
-
-                    if len(song_features.shape) == 2:
-                        song_features = np.array([_line[lower_limit:upper_limit] for _line in song_features])
-                    elif len(song_features.shape) == 1:
-                        song_features = np.array([song_features[lower_limit:upper_limit]])
+                    song_features = song_features[..., lower_limit:upper_limit]
                     training_vector.append(song_features)
                     labels.append(idx)
             idx += 1
