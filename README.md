@@ -20,12 +20,14 @@ Detailed guide in [tutorial.md](https://github.com/BSVogler/music-genre-recognit
 
 ### feature extractions:
 
-- Vamp [sonic-annotator](https://code.soundsoftware.ac.uk/projects/sonic-annotator/files)
+- Vamp plugin host [sonic-annotator](https://code.soundsoftware.ac.uk/projects/sonic-annotator/files) (GNU license)
 - [QM Vamp plugin](https://code.soundsoftware.ac.uk/projects/qm-vamp-plugins/files)
 - [BBC Vamp plugin](https://github.com/bbcrd/bbc-vamp-plugins/releases)
 
 on Mac OS: 
-copy plugins to /Library/Audio/Plugin-ins/Vamp
+copy plugins to `/Library/Audio/Plug-Ins/Vamp/`
+
+allow execution of unsigned library in security settings after a failed attempt
 
 ### python libraries:
 Simply run:
