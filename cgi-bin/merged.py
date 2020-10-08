@@ -3,7 +3,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dense, Concatenate, Convolution1D, Activation, MaxPooling1D, Dropout, LSTM
+from tensorflow.python.keras.layers import Dense, Concatenate, Convolution1D, Activation, MaxPooling1D, Dropout, LSTM, \
+    GRU
 from tensorflow.python.keras.callbacks import ModelCheckpoint
 np.random.seed(1337)  # for reproducibility
 import matplotlib.pyplot as plt
@@ -56,8 +57,7 @@ if __name__ == "__main__":
     model_mfcc = MaxPooling1D(pool_size=pool_length)(model_mfcc)
     model_mfcc = Dropout(0.4)(model_mfcc)
 
-    model_mfcc = LSTM(300,
-                 # input_shape=input_shape,
+    model_mfcc = GRU(300,
                  activation='sigmoid',
                  recurrent_activation='hard_sigmoid')(model_mfcc)
 
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     model = MaxPooling1D(pool_size=1)(model)
     model = Dropout(0.2)(model)
 
-    model_spc = LSTM(100,
+    model_spc = GRU(100,
                  activation='sigmoid',
                  recurrent_activation='hard_sigmoid',
                  # return_sequences=True
