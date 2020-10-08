@@ -8,6 +8,7 @@ webAPI ← keras ← vamp
 
 [Demo Video](https://www.youtube.com/watch?v=fLe6uyDHeCE)
 
+The Deep Learning model achieves an accuracy of 85% on three genres.
 
 Current known issues:
 The webserver does not serve python files.
