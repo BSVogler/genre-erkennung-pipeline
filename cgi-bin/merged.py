@@ -40,7 +40,6 @@ if __name__ == "__main__":
     input_mfcc = keras.Input(shape=mfcc_shape, name="mfcc_input")
 
     conf_mfcc = Convolution1D(
-        input_shape=mfcc_shape,
         filters=100,
         kernel_size=4,
         padding='valid',
@@ -66,7 +65,6 @@ if __name__ == "__main__":
 
     inputs_scp = keras.Input(sc_shape, name="spectralconstrastpeaks")
     model = Convolution1D(
-        batch_input_shape=sc_shape,
         filters=100,
         kernel_size=3,
         padding='valid',
@@ -76,7 +74,6 @@ if __name__ == "__main__":
     model = Dropout(0.2)(model)
 
     model_spc = LSTM(100,
-                 # input_shape=input_shape,
                  activation='sigmoid',
                  recurrent_activation='hard_sigmoid',
                  # return_sequences=True
