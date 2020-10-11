@@ -170,10 +170,29 @@ def load_evaluate():
 
 def plot_confusion_matrix(model, y_test, x_test):
     import sklearn.metrics
-    y_pred = model.predict()
-    cmatrix = sklearn.metrics.confusion_matrix(y_test, y_pred)
-    plt.matshow(cmatrix)
+    y_pred = model.predict(x_test)
+    y_pred_index = np.argmax(y_pred, axis=1)
+    y_test_index = np.argmax(y_test, axis=1)
+    confmx = sklearn.metrics.confusion_matrix(y_test_index, y_pred_index)
+    sum_row = confmx.sum(axis=1, keepdims=True)
+    confmx_norm = confmx / sum_row
+
+    labels = ["genre0", "genre1", "genre2"]
+    fig = plt.figure()
+    plt.title("Confusion Relative")
+    ax = fig.add_subplot(111)
+    cax = ax.matshow(confmx_norm, interpolation='nearest')
+    fig.colorbar(cax)
+
+    for (i, j), z in np.ndenumerate(confmx_norm):
+        ax.text(j, i, '{:0.2f}'.format(z), ha='center', va='center',
+                bbox=dict(boxstyle='round', facecolor='white', edgecolor='0.3'))
+
+    ax.set_xticklabels([''] + labels)
+    ax.set_yticklabels([''] + labels)
+
     plt.show()
+
 
 if __name__ == "__main__":
     train()
