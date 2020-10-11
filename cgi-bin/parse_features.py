@@ -40,6 +40,8 @@ def create_dataset(dataset_path: str, feature=None, lower_limit=None, upper_limi
     for root, dirs, files in os.walk(dataset_path, topdown=False):
         genres = [genre for genre in dirs]
     print("genres", genres)
+    #todo save string to index mapping to disk
+    
     idx = 0
     for root, dirs, files in os.walk(dataset_path, topdown=False):
         if root != dataset_path:  # ignore top level
