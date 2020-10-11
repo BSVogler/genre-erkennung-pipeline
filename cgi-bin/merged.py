@@ -19,6 +19,7 @@ numGenres = 3
 # create model
 datasetpath = "../pickled_vectors"
 modelarchdir = "../model_architecture/"
+modelWeightsPath = "./model_weights/merged_model_weights.hdf5"
 
 
 def train():
