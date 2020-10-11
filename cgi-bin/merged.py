@@ -180,8 +180,8 @@ def plot_confusion_matrix(model, y_test, x_test):
 
     labels = ["genre0", "genre1", "genre2"]
     fig = plt.figure()
-    plt.title("Confusion Relative")
     ax = fig.add_subplot(111)
+    plt.title("Confusion Relative")
     cax = ax.matshow(confmx_norm, interpolation='nearest')
     fig.colorbar(cax)
 
