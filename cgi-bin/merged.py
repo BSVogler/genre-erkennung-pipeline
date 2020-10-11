@@ -161,6 +161,7 @@ def train():
 
 def load_evaluate():
     model = load_model(modelarchdir + "merged")
+    model.load_weights(modelWeightsPath)
     y_test = pickle.load(open(datasetpath + "/mfcc_coefficients_evaluation_label.pickle", "rb"))
     x_test_1 = pickle.load(open(datasetpath + "/mfcc_coefficients_evaluation_training_vector.pickle", "rb"))
     x_test_2 = pickle.load(open(datasetpath + "/spectral-contrast_peaks_evaluation_training_vector.pickle", "rb"))
