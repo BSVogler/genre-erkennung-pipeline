@@ -119,6 +119,9 @@ if __name__ == "__main__":
     checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
     callbacks_list = [checkpoint]
 
+    # write architecture to file
+    final_model.save("../model_architecture/merged_model_architecture.json")
+
     history = final_model.fit((X_1, X_2), y,
                               batch_size=batch_size,
                               epochs=nb_epoch,
@@ -129,9 +132,7 @@ if __name__ == "__main__":
     print("saving final result")
     final_model.save_weights("model_weights/merged_model_weights.hdf5", overwrite=True)
 
-    # write architecture to file
-    final_model.save("../model_architecture/merged_model_architecture.json")
-
+    #dump training history
     with open("experimental_results.json", "w") as f:
         f.write(json.dumps(history.history, sort_keys=True, indent=4, separators=(',', ': ')))
 
