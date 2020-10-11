@@ -2,9 +2,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dense, Concatenate, Convolution1D, Activation, MaxPooling1D, Dropout, LSTM, \
-    GRU
+from tensorflow.python.keras.layers import Convolution1D, Activation, MaxPooling1D, Dropout, GRU
 from tensorflow.python.keras.callbacks import ModelCheckpoint
 np.random.seed(1337)  # for reproducibility
 import matplotlib.pyplot as plt
