@@ -14,6 +14,8 @@ The webserver does not serve python files.
 ## Model
 The deep learning model uses convolution on top of recurrent cells. It achieves an accuracy (precision) of 85% on three genres.
 
+![Confusion Matrix](https://github.com/BSVogler/music-genre-recognition-pipeline/blob/master/images/confusion_matrix.png?raw=true)
+
 ## Dataset
 The datset is included in the form of pickled feature vectors extracted via sonic-annotator. The original music files and categorization were collections of "best-of" music CDs.
 
