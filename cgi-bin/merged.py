@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.python.keras.layers import Convolution1D, Activation, MaxPooling1D, Dropout, GRU
 from tensorflow.python.keras.callbacks import ModelCheckpoint
-from tensorflow.python.keras.models import model_from_json
+from tensorflow.python.keras.models import model_from_json, load_model
 
 np.random.seed(1337)  # for reproducibility
 import matplotlib.pyplot as plt
@@ -157,3 +157,23 @@ def train():
 
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     plt.savefig('history.png')
+
+
+def load_evaluate():
+    model = load_model(modelarchdir + "merged")
+    y_test = pickle.load(open(datasetpath + "/mfcc_coefficients_evaluation_label.pickle", "rb"))
+    x_test_1 = pickle.load(open(datasetpath + "/mfcc_coefficients_evaluation_training_vector.pickle", "rb"))
+    x_test_2 = pickle.load(open(datasetpath + "/spectral-contrast_peaks_evaluation_training_vector.pickle", "rb"))
+    x_test = (x_test_1, x_test_2)
+    plot_confusion_matrix(model, y_test, x_test)
+
+
+def plot_confusion_matrix(model, y_test, x_test):
+    import sklearn.metrics
+    y_pred = model.predict()
+    cmatrix = sklearn.metrics.confusion_matrix(y_test, y_pred)
+    plt.matshow(cmatrix)
+    plt.show()
+
+if __name__ == "__main__":
+    train()
