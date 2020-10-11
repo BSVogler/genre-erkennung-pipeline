@@ -4,37 +4,41 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.python.keras.layers import Convolution1D, Activation, MaxPooling1D, Dropout, GRU
 from tensorflow.python.keras.callbacks import ModelCheckpoint
+from tensorflow.python.keras.models import model_from_json
+
 np.random.seed(1337)  # for reproducibility
 import matplotlib.pyplot as plt
 import pickle
 import json
 import os
 
-if __name__ == "__main__":
-    batch_size = 50
-    nb_epoch = 200
-    numGenres = 3
+batch_size = 50
+nb_epoch = 100
+numGenres = 3
 
+# create model
+datasetpath = "../pickled_vectors"
+modelarchdir = "../model_architecture/"
+
+
+def train():
     print("creating model")
-    # create model
-    datasetfolder = "../pickled_vectors"
+    X_1 = pickle.load(open(datasetpath + "/mfcc_coefficients_training_vector.pickle", "rb"))
+    X_test_1 = pickle.load(open(datasetpath + "/mfcc_coefficients_evaluation_training_vector.pickle", "rb"))
 
-    X_1 = pickle.load(open(datasetfolder + "/mfcc_coefficients_training_vector.pickle", "rb"))
-    X_test_1 = pickle.load(open(datasetfolder + "/mfcc_coefficients_evaluation_training_vector.pickle", "rb"))
-
-    X_2 = pickle.load(open(datasetfolder + "/spectral-contrast_peaks_training_vector.pickle", "rb"))
-    X_test_2 = pickle.load(open(datasetfolder + "/spectral-contrast_peaks_evaluation_training_vector.pickle", "rb"))
+    X_2 = pickle.load(open(datasetpath + "/spectral-contrast_peaks_training_vector.pickle", "rb"))
+    X_test_2 = pickle.load(open(datasetpath + "/spectral-contrast_peaks_evaluation_training_vector.pickle", "rb"))
 
     print("X_1 (MFCC: items x max length x buckets)", X_1.shape)
     print("X_test_1", X_test_1.shape)
     print("X_2 (spectral contrast: items x peaks x buckets)", X_2.shape)
     print("X_test_2", X_test_2.shape)
 
-    #crashes because input shape can not be generated using input_shapes = tf_utils.convert_shapes(inputs, to_tuples=False)
+    # crashes because input shape can not be generated using input_shapes = tf_utils.convert_shapes(inputs, to_tuples=False)
     pool_length = 4
 
-    mfcc_shape = X_1.shape[1:]#conv on 2d
-    sc_shape = X_2.shape[1:]#conv on 2d
+    mfcc_shape = X_1.shape[1:]  # conv on 2d
+    sc_shape = X_2.shape[1:]  # conv on 2d
     # create model
     input_mfcc = keras.Input(shape=mfcc_shape, name="mfcc_input")
 
@@ -56,8 +60,8 @@ if __name__ == "__main__":
     model_mfcc = Dropout(0.4)(model_mfcc)
 
     model_mfcc = GRU(300,
-                 activation='sigmoid',
-                 recurrent_activation='hard_sigmoid')(model_mfcc)
+                     activation='sigmoid',
+                     recurrent_activation='hard_sigmoid')(model_mfcc)
 
     model_mfcc = Dropout(0.4)(model_mfcc)
 
@@ -72,17 +76,17 @@ if __name__ == "__main__":
     model = Dropout(0.2)(model)
 
     model_spc = GRU(100,
-                 activation='sigmoid',
-                 recurrent_activation='hard_sigmoid',
-                 # return_sequences=True
-                 )(model)
+                    activation='sigmoid',
+                    recurrent_activation='hard_sigmoid',
+                    # return_sequences=True
+                    )(model)
 
     model_spc = Dropout(0.2)(model_spc)
 
     merged = keras.layers.Concatenate()([model_mfcc, model_spc])
     x = keras.layers.Dense(100)(merged)
     x = keras.layers.Dense(numGenres, activation='softmax')(x)
-    final_model = keras.Model(inputs=(input_mfcc,inputs_scp), outputs=x)
+    final_model = keras.Model(inputs=(input_mfcc, inputs_scp), outputs=x)
 
     final_model.compile(
         loss='categorical_crossentropy',
@@ -90,7 +94,13 @@ if __name__ == "__main__":
         metrics=['accuracy']
     )
 
-    #tf.keras.utils.plot_model(final_model, to_file='merged.png', show_shapes=True)
+    # write architecture to file
+    savedir = modelarchdir + "merged"
+    print(f"Saving architecture at {savedir}... ", end="")
+    final_model.save(savedir)
+    print("Ok")
+
+    tf.keras.utils.plot_model(final_model, to_file='merged.png', show_shapes=True)
 
     print("Training")
     if not os.path.exists("model_weights"):
@@ -106,8 +116,8 @@ if __name__ == "__main__":
     # # for i in range(10):
     # #     print("epoch",i)
 
-    y = pickle.load(open(datasetfolder + "/mfcc_coefficients_label.pickle", "rb"))
-    y_test = pickle.load(open(datasetfolder + "/mfcc_coefficients_evaluation_label.pickle", "rb"))
+    y = pickle.load(open(datasetpath + "/mfcc_coefficients_label.pickle", "rb"))
+    y_test = pickle.load(open(datasetpath + "/mfcc_coefficients_evaluation_label.pickle", "rb"))
     print("y", y.shape)
     print("y_test", y_test.shape)
 
@@ -119,9 +129,6 @@ if __name__ == "__main__":
     checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
     callbacks_list = [checkpoint]
 
-    # write architecture to file
-    final_model.save("../model_architecture/merged_model_architecture.json")
-
     history = final_model.fit((X_1, X_2), y,
                               batch_size=batch_size,
                               epochs=nb_epoch,
@@ -129,10 +136,11 @@ if __name__ == "__main__":
                               shuffle="batch",
                               callbacks=callbacks_list,
                               )
-    print("saving final result")
+
+    print("Saving final result.")
     final_model.save_weights("model_weights/merged_model_weights.hdf5", overwrite=True)
 
-    #dump training history
+    # dump training history
     with open("experimental_results.json", "w") as f:
         f.write(json.dumps(history.history, sort_keys=True, indent=4, separators=(',', ': ')))
 
