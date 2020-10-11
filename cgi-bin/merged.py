@@ -106,10 +106,13 @@ def train():
     if not os.path.exists("model_weights"):
         os.makedirs("model_weights")
 
-    # check if can write to file
-    f = open('model_weights/mfcc_model_weights.hdf5', 'a')
+    # check if can write to file because of the webserver might have reduced rights
+    weightpath = 'model_weights/mfcc_model_weights.hdf5'
+    f = open(weightpath, 'a')
     f.write('test')
     f.close()
+    os.remove(weightpath)
+
     # #
     # final_model.load_weights("model_weights/embeddings_10_sec_split_gztan_merged_model_weights.hdf5")
     # #
