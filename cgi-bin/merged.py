@@ -133,10 +133,11 @@ def train():
     checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
     callbacks_list = [checkpoint]
 
+    x_test = (X_test_1, X_test_2)
     history = final_model.fit((X_1, X_2), y,
                               batch_size=batch_size,
                               epochs=nb_epoch,
-                              validation_data=((X_test_1, X_test_2), y_test),
+                              validation_data=(x_test, y_test),
                               shuffle="batch",
                               callbacks=callbacks_list,
                               )
