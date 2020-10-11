@@ -17,6 +17,7 @@ def query(filepath, keep=True):
     np.random.seed(1337)  # for reproducibility
     datasetpath = "pickled_vectors"
     modelarchdir = "../model_architecture"
+    modelWeightsPath = "./model_weights/merged_model_weights.hdf5"
 
     import os
     import re
@@ -31,7 +32,6 @@ def query(filepath, keep=True):
     song_dir = os.path.dirname(os.path.realpath(filepath))  # should get the directory to the file
     print("The song dir is: " + song_dir)
 
-    modelWeightsPath = "./model_weights/merged_model_weights.hdf5"
     if not os.path.exists(modelWeightsPath):
         print("No model weights found in path '" + os.path.realpath(modelWeightsPath) + "'")
     else:
