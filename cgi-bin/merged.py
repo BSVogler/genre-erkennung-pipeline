@@ -85,6 +85,7 @@ def train():
     model_spc = Dropout(0.2)(model_spc)
 
     merged = keras.layers.Concatenate()([model_mfcc, model_spc])
+    x = keras.layers.BatchNormalization()(merged)
     x = keras.layers.Dense(100, activation="elu")(x)
     x = keras.layers.Dense(numGenres, activation='softmax')(x)
     final_model = keras.Model(inputs=(input_mfcc, inputs_scp), outputs=x)
