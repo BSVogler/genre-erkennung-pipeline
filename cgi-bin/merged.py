@@ -43,12 +43,12 @@ def train():
     # create model
     input_mfcc = keras.Input(shape=mfcc_shape, name="mfcc_input")
 
-    conf_mfcc = Convolution1D(
+    model_mfcc = Convolution1D(
         filters=100,
         kernel_size=4,
         padding='valid',
         strides=1)(input_mfcc)
-    model_mfcc = Activation('relu')(conf_mfcc)
+    model_mfcc = Activation('relu')(model_mfcc)
     model_mfcc = MaxPooling1D(pool_size=pool_length)(model_mfcc)
     model_mfcc = Dropout(0.4)(model_mfcc)
     model_mfcc = Convolution1D(
@@ -159,7 +159,7 @@ def train():
 
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     plt.savefig('history.png')
-    plot_confusion_matrix(model, y_test, x_test)
+    plot_confusion_matrix(final_model, y_test, x_test)
 
 
 def load_evaluate():
