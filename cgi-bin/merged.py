@@ -50,7 +50,7 @@ def train():
         strides=1)(input_mfcc)
     model_mfcc = Activation('relu')(model_mfcc)
     model_mfcc = MaxPooling1D(pool_size=pool_length)(model_mfcc)
-    model_mfcc = Dropout(0.4)(model_mfcc)
+    model_mfcc = Dropout(0.3)(model_mfcc)
     model_mfcc = Convolution1D(
         filters=20,
         kernel_size=4,
@@ -58,7 +58,7 @@ def train():
         strides=1)(model_mfcc)
     model_mfcc = Activation('relu')(model_mfcc)
     model_mfcc = MaxPooling1D(pool_size=pool_length)(model_mfcc)
-    model_mfcc = Dropout(0.4)(model_mfcc)
+    model_mfcc = Dropout(0.3)(model_mfcc)
 
     model_mfcc = GRU(300,
                      activation='sigmoid',
@@ -85,7 +85,7 @@ def train():
     model_spc = Dropout(0.2)(model_spc)
 
     merged = keras.layers.Concatenate()([model_mfcc, model_spc])
-    x = keras.layers.Dense(100)(merged)
+    x = keras.layers.Dense(100, activation="elu")(x)
     x = keras.layers.Dense(numGenres, activation='softmax')(x)
     final_model = keras.Model(inputs=(input_mfcc, inputs_scp), outputs=x)
 
